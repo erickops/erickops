@@ -274,6 +274,7 @@
           <li><a href="blog.html">Blog</a></li>
           <li><a href="cats.html" class="active">Cats</a></li>
           <li><a href="about.html">About</a></li>
+          <li><a href="write.html">Write</a></li>
           <li><a href="https://linktr.ee/erickops" class="btn-request" target="_blank" rel="noopener">Find Me</a></li>
         </ul>
       </div>
@@ -395,13 +396,12 @@
       { id:'oyen',   name:'Oyen',   emoji:'🍊' },
     ];
 
-    const STORAGE_KEY  = 'erickops_cat_attendance_v2'; // v2 = per-entry log
+    const STORAGE_KEY  = 'erickops_cat_attendance_v2';
     const SESSION_KEY  = 'erickops_cats_unlocked';
     let   todayKey     = '';
     let   isOwner      = false;
     let   attendance   = {};
-    // entries: Array<{ id, dateKey, datetime, savedAt, cats: {[catId]:{status,time}} }>
-    // Disimpan di localStorage[STORAGE_KEY]
+    let   allEntries   = []; // in-memory cache of all entries (from API or localStorage)
 
     /* ══════════════════════════════════
        MODAL — unlock / lock
@@ -504,19 +504,19 @@
     /* ══════════════════════════════════
        INIT
     ══════════════════════════════════ */
-    document.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener('DOMContentLoaded', async () => {
       document.getElementById('year').textContent = new Date().getFullYear();
 
       const now  = new Date();
       todayKey   = now.toISOString().split('T')[0];
 
-      // Date label
       document.getElementById('today-label').textContent =
         '📅 ' + now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
-      // Load attendance — pakai entry terakhir hari ini sebagai state awal
-      const entries  = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      const todayEntries = entries.filter(e => e.dateKey === todayKey);
+      // ── Load entries: try API first, fallback to localStorage ──
+      allEntries = await loadEntries();
+
+      const todayEntries = allEntries.filter(e => e.dateKey === todayKey);
       const lastEntry    = todayEntries[todayEntries.length - 1] || null;
 
       attendance = {};
@@ -528,20 +528,35 @@
           `⏰ Terakhir disimpan: ${lastEntry.savedAt} · ${todayEntries.length}x hari ini`;
       }
 
-      // Check session
-      if (sessionStorage.getItem(SESSION_KEY) === '1') {
-        activateEditMode();
-      }
+      if (sessionStorage.getItem(SESSION_KEY) === '1') activateEditMode();
 
       startClock();
       renderCats();
-      renderLog(entries);
+      renderLog(allEntries);
 
-      // Close modal on overlay click
       document.getElementById('unlockModal').addEventListener('click', (e) => {
         if (e.target === document.getElementById('unlockModal')) closeModal();
       });
     });
+
+    /* ── Load entries from API, fall back to localStorage ── */
+    async function loadEntries() {
+      try {
+        const res = await fetch('/api/attendance');
+        if (!res.ok) throw new Error('API error');
+        const data = await res.json();
+        if (data.ok && Array.isArray(data.entries)) {
+          // Sync to localStorage as backup
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(data.entries));
+          return data.entries;
+        }
+        throw new Error('Bad response');
+      } catch (e) {
+        // Fallback: use localStorage
+        console.warn('API unavailable, using localStorage:', e.message);
+        return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      }
+    }
 
     /* ══════════════════════════════════
        CLOCK
@@ -620,34 +635,49 @@
     function saveAttendance() {
       if (!isOwner) return;
 
-      const now     = new Date();
-      const savedAt = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-      const datetime = now.toISOString(); // untuk sorting akurat
+      const now      = new Date();
+      const savedAt  = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+      const datetime = now.toISOString();
 
-      // Buat entry baru (snapshot lengkap kondisi saat ini)
       const newEntry = {
-        id:       datetime,          // unique ID = ISO string
+        id:       datetime,
         dateKey:  todayKey,
         datetime: datetime,
         savedAt:  savedAt,
-        cats:     JSON.parse(JSON.stringify(attendance)) // deep copy
+        cats:     JSON.parse(JSON.stringify(attendance))
       };
 
-      // Load existing entries, tambahkan yang baru, prune kalau > 500 entries
-      const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      entries.push(newEntry);
-      if (entries.length > 500) entries.splice(0, entries.length - 500);
+      // Optimistic UI update
+      allEntries.push(newEntry);
+      if (allEntries.length > 500) allEntries.splice(0, allEntries.length - 500);
 
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-
-      // Hitung berapa kali hari ini
-      const todayCount = entries.filter(e => e.dateKey === todayKey).length;
-
+      const todayCount = allEntries.filter(e => e.dateKey === todayKey).length;
       document.getElementById('saved-time-label').textContent =
         `⏰ Terakhir disimpan: ${savedAt} · ${todayCount}x hari ini`;
+      renderLog(allEntries);
 
-      showToast(`✅ Absensi disimpan pukul ${savedAt}`, 'success');
-      renderLog(entries);
+      // ── Try POST to API ──
+      fetch('/api/attendance', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ password: OWNER_PASSWORD, entry: newEntry }),
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.ok) {
+          // Also update localStorage as backup
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(allEntries));
+          showToast(`✅ Absensi disimpan pukul ${savedAt}`, 'success');
+        } else {
+          throw new Error(data.error || 'API rejected');
+        }
+      })
+      .catch(err => {
+        // Fallback: save to localStorage only
+        console.warn('API save failed, using localStorage:', err.message);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(allEntries));
+        showToast(`✅ Tersimpan lokal pukul ${savedAt}`, 'success');
+      });
     }
 
     /* ══════════════════════════════════

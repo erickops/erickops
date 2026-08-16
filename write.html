@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>erickops — write</title>
+  <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Circle-icons-rocket.svg/1200px-Circle-icons-rocket.svg.png">
+  <link rel="stylesheet" href="./style.css">
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+  <style>
+    /* ── Write page layout ── */
+    .write-wrapper {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 30px 20px 80px;
+    }
+
+    .write-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+    .write-header h1 {
+      font-family: 'Space Mono', monospace;
+      font-size: clamp(20px, 3vw, 28px);
+      color: #fff;
+      margin: 0;
+    }
+
+    /* ── Auth gate ── */
+    .auth-gate {
+      max-width: 400px;
+      margin: 80px auto;
+      background: rgba(5, 0, 18, 0.8);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 203, 57, 0.2);
+      border-radius: 20px;
+      padding: 40px 32px;
+      text-align: center;
+    }
+    .auth-gate .gate-icon { font-size: 44px; margin-bottom: 14px; display: block; }
+    .auth-gate h2 {
+      font-family: 'Space Mono', monospace;
+      color: #fff; font-size: 20px;
+      margin: 0 0 8px;
+    }
+    .auth-gate p { color: #fff; font-size: 13px; margin: 0 0 24px; }
+
+    .pw-wrap { position: relative; margin-bottom: 12px; }
+    .pw-field {
+      width: 100%; padding: 12px 46px 12px 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50px; color: #fff;
+      font-family: 'Space Mono', monospace;
+      font-size: 14px; letter-spacing: 3px;
+      outline: none; transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+    .pw-field:focus { border-color: rgba(255,203,57,0.5); }
+    .pw-field.shake { animation: shake 0.35s ease; border-color: rgba(255,80,80,0.6) !important; }
+    .pw-eye {
+      position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; color: #fff; cursor: pointer; font-size: 16px;
+    }
+    .pw-err { font-family: 'Space Mono', monospace; font-size: 11px; color: #ff8080; min-height: 18px; margin-bottom: 10px; }
+    .btn-enter {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, rgba(255,203,57,0.9), rgba(255,180,30,0.9));
+      color: #0a0015; border: none; border-radius: 50px;
+      font-family: 'Dosis', sans-serif; font-weight: 700;
+      font-size: 14px; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.3s;
+    }
+    .btn-enter:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(255,203,57,0.3); }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%,60%  { transform: translateX(-8px); }
+      40%,80%  { transform: translateX(8px); }
+    }
+
+    /* ── Editor layout ── */
+    .editor-layout {
+      display: none; /* shown after auth */
+      gap: 20px;
+    }
+    .editor-layout.visible { display: grid; grid-template-columns: 1fr 1fr; }
+
+    /* Meta bar */
+    .meta-bar {
+      grid-column: 1 / -1;
+      background: rgba(5, 0, 18, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 203, 57, 0.12);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: 1fr auto auto auto;
+      gap: 14px;
+      align-items: end;
+    }
+
+    .field-group { display: flex; flex-direction: column; gap: 6px; }
+    .field-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 10px; color: #ffcb39;
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .field-input, .field-select {
+      padding: 9px 14px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #fff;
+      font-family: 'Dosis', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+    .field-input:focus, .field-select:focus { border-color: rgba(255,203,57,0.4); }
+    .field-select option { background: #0a0015; color: #fff; }
+
+    .field-input.title-input {
+      font-size: 16px;
+      font-family: 'Space Mono', monospace;
+    }
+
+    /* Writing panel */
+    .panel {
+      background: rgba(5, 0, 18, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 203, 57, 0.1);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-header {
+      padding: 12px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .panel-title {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; color: #ffcb39;
+      letter-spacing: 2px; text-transform: uppercase;
+      flex: 1;
+    }
+
+    /* Toolbar */
+    .toolbar { display: flex; gap: 4px; flex-wrap: wrap; }
+    .tb-btn {
+      padding: 4px 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 6px;
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tb-btn:hover { background: rgba(255,203,57,0.15); border-color: rgba(255,203,57,0.3); color: #ffcb39; }
+
+    /* Textarea */
+    .write-area {
+      flex: 1;
+      padding: 20px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      line-height: 1.7;
+      resize: none;
+      outline: none;
+      min-height: 500px;
+    }
+    .write-area::placeholder { color: rgba(255,255,255,0.2); }
+
+    /* Preview panel */
+    .preview-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      font-size: 15px;
+      line-height: 1.8;
+      color: #fff;
+      min-height: 500px;
+    }
+    .preview-content h1, .preview-content h2,
+    .preview-content h3, .preview-content h4 {
+      font-family: 'Space Mono', monospace;
+      color: #fff; margin-top: 28px; margin-bottom: 12px;
+    }
+    .preview-content h2 { font-size: 20px; border-bottom: 1px solid rgba(255,203,57,0.15); padding-bottom: 6px; }
+    .preview-content h3 { font-size: 16px; color: #ffcb39; }
+    .preview-content p  { margin: 0 0 16px; }
+    .preview-content a  { color: #ffcb39; }
+    .preview-content blockquote {
+      border-left: 3px solid #ffcb39;
+      margin: 20px 0; padding: 8px 16px;
+      background: rgba(255,203,57,0.05);
+      border-radius: 0 8px 8px 0;
+      font-style: italic;
+    }
+    .preview-content code {
+      font-family: 'Space Mono', monospace;
+      background: rgba(168,85,247,0.15);
+      border: 1px solid rgba(168,85,247,0.3);
+      padding: 2px 6px; border-radius: 4px;
+      font-size: 12px; color: #c084fc;
+    }
+    .preview-content pre {
+      background: rgba(0,0,0,0.5);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 16px; overflow-x: auto;
+      margin: 20px 0;
+    }
+    .preview-content pre code {
+      background: none; border: none; padding: 0;
+      color: #a0ffb0; font-size: 13px;
+    }
+    .preview-content ul, .preview-content ol { padding-left: 22px; margin-bottom: 16px; }
+    .preview-content li { margin-bottom: 6px; }
+    .preview-content table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+    .preview-content th {
+      background: rgba(255,203,57,0.1); color: #ffcb39;
+      font-family: 'Space Mono', monospace;
+      padding: 8px 12px; border: 1px solid rgba(255,255,255,0.1); text-align: left;
+    }
+    .preview-content td { padding: 8px 12px; border: 1px solid rgba(255,255,255,0.07); }
+    .preview-content tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+    .preview-empty {
+      display: flex; align-items: center; justify-content: center;
+      height: 100%; color: rgba(255,255,255,0.2);
+      font-family: 'Space Mono', monospace; font-size: 13px;
+      text-align: center; padding: 20px;
+    }
+
+    /* Action bar */
+    .action-bar {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 16px 20px;
+      background: rgba(5, 0, 18, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 203, 57, 0.1);
+      border-radius: 16px;
+    }
+    .action-info {
+      font-family: 'Space Mono', monospace;
+      font-size: 11px; color: #fff;
+      display: flex; gap: 16px; flex-wrap: wrap;
+    }
+    .action-info span { white-space: nowrap; }
+    .action-info .wc-num { color: #ffcb39; }
+    .action-buttons { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    /* Status overlay */
+    .publish-status {
+      display: none;
+      grid-column: 1 / -1;
+      padding: 20px 24px;
+      border-radius: 16px;
+      text-align: center;
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+    }
+    .publish-status.loading {
+      display: block;
+      background: rgba(255,203,57,0.08);
+      border: 1px solid rgba(255,203,57,0.2);
+      color: #ffcb39;
+    }
+    .publish-status.success {
+      display: block;
+      background: rgba(80,255,150,0.08);
+      border: 1px solid rgba(80,255,150,0.3);
+      color: #50ff96;
+    }
+    .publish-status.error {
+      display: block;
+      background: rgba(255,80,80,0.08);
+      border: 1px solid rgba(255,80,80,0.3);
+      color: #ff8080;
+    }
+
+    /* Draft badge */
+    .draft-badge {
+      font-family: 'Space Mono', monospace;
+      font-size: 9px; padding: 3px 8px;
+      background: rgba(255,203,57,0.15);
+      border: 1px solid rgba(255,203,57,0.3);
+      border-radius: 20px; color: #ffcb39;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .editor-layout.visible { grid-template-columns: 1fr; }
+      .meta-bar { grid-template-columns: 1fr 1fr; }
+      .write-area, .preview-content { min-height: 300px; }
+    }
+    @media (max-width: 480px) {
+      .meta-bar { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body class="bg-purple">
+
+  <div class="stars">
+    <div class="glowing_stars">
+      <div class="star"></div><div class="star"></div><div class="star"></div>
+      <div class="star"></div><div class="star"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="custom-navbar">
+      <div class="brand-logo">
+        <a href="index.html">erick<span>ops</span>.space</a>
+      </div>
+      <div class="hamburger" id="hamburger" onclick="toggleNav()">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="navbar-links" id="navLinks">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="cats.html">Cats</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="write.html" class="active">Write</a></li>
+          <li><a href="https://linktr.ee/erickops" class="btn-request" target="_blank" rel="noopener">Find Me</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="page-wrapper">
+      <div class="write-wrapper">
+
+        <!-- ── AUTH GATE ── -->
+        <div class="auth-gate" id="authGate">
+          <span class="gate-icon">✍️</span>
+          <h2>Writer Access</h2>
+          <p>Enter your password to start writing.</p>
+          <div class="pw-wrap">
+            <input class="pw-field" type="password" id="pwField"
+                   placeholder="password..." autocomplete="current-password"
+                   onkeydown="if(event.key==='Enter')authSubmit()">
+            <button class="pw-eye" onclick="toggleEye()" title="Show/hide">👁</button>
+          </div>
+          <div class="pw-err" id="pwErr"></div>
+          <button class="btn-enter" onclick="authSubmit()">Enter ✦</button>
+        </div>
+
+        <!-- ── EDITOR (hidden until auth) ── -->
+        <div class="editor-layout" id="editorLayout">
+
+          <!-- Write header -->
+          <div class="write-header" style="grid-column:1/-1;">
+            <h1>// New Post ✍️</h1>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <span class="draft-badge" id="draftBadge" style="display:none;">draft saved</span>
+              <button class="btn-secondary" style="padding:8px 18px;font-size:12px;" onclick="lockWriter()">🔒 Logout</button>
+            </div>
+          </div>
+
+          <!-- Meta bar -->
+          <div class="meta-bar">
+            <div class="field-group" style="grid-column:1/-1;">
+              <label class="field-label" for="titleInput">Title</label>
+              <input class="field-input title-input" type="text" id="titleInput"
+                     placeholder="your post title here..."
+                     oninput="onMetaChange()">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="catSelect">Category</label>
+              <select class="field-select" id="catSelect" onchange="onMetaChange()">
+                <option value="network">📡 Network</option>
+                <option value="security">🔐 Security</option>
+                <option value="coding">💻 Coding</option>
+                <option value="life">🌱 Life</option>
+                <option value="love">💙 Love</option>
+                <option value="random">✨ Random</option>
+              </select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="tagsInput">Tags <span style="opacity:0.5;">(comma separated)</span></label>
+              <input class="field-input" type="text" id="tagsInput"
+                     placeholder="networking, linux, tools"
+                     oninput="onMetaChange()">
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="dateInput">Date</label>
+              <input class="field-input" type="date" id="dateInput" oninput="onMetaChange()">
+            </div>
+          </div>
+
+          <!-- Write panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">// Markdown</span>
+              <div class="toolbar">
+                <button class="tb-btn" onclick="insertMd('**','**')" title="Bold">B</button>
+                <button class="tb-btn" onclick="insertMd('*','*')"   title="Italic"><em>i</em></button>
+                <button class="tb-btn" onclick="insertMd('`','`')"   title="Inline code">` `</button>
+                <button class="tb-btn" onclick="insertMdLine('## ')" title="Heading 2">H2</button>
+                <button class="tb-btn" onclick="insertMdLine('### ')" title="Heading 3">H3</button>
+                <button class="tb-btn" onclick="insertCodeBlock()"   title="Code block">```</button>
+                <button class="tb-btn" onclick="insertMdLine('> ')"  title="Blockquote">"</button>
+                <button class="tb-btn" onclick="insertMdLine('- ')"  title="List">—</button>
+                <button class="tb-btn" onclick="insertMd('---\n','')" title="Divider">—/—</button>
+              </div>
+            </div>
+            <textarea class="write-area" id="writeArea"
+                      placeholder="Start writing here... Markdown is supported.&#10;&#10;# Your heading&#10;&#10;Your content..."
+                      oninput="onContentChange()"></textarea>
+          </div>
+
+          <!-- Preview panel -->
+          <div class="panel">
+            <div class="panel-header">
+              <span class="panel-title">// Preview</span>
+            </div>
+            <div class="preview-content" id="previewContent">
+              <div class="preview-empty">preview will appear here as you write</div>
+            </div>
+          </div>
+
+          <!-- Publish status -->
+          <div class="publish-status" id="publishStatus"></div>
+
+          <!-- Action bar -->
+          <div class="action-bar">
+            <div class="action-info">
+              <span><span class="wc-num" id="wcCount">0</span> words</span>
+              <span>~<span class="wc-num" id="rtEst">0</span> min read</span>
+              <span id="slugPreview" style="color:rgba(255,255,255,0.4);"></span>
+            </div>
+            <div class="action-buttons">
+              <button class="btn-secondary" style="padding:10px 20px;font-size:12px;" onclick="saveDraft()">
+                💾 Save Draft
+              </button>
+              <button class="btn-primary" style="padding:10px 24px;font-size:12px;" onclick="publishPost()" id="publishBtn">
+                🚀 Publish
+              </button>
+            </div>
+          </div>
+
+        </div><!-- /editor-layout -->
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>© <span id="year"></span> erickops.space</p>
+    </footer>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="./script.js"></script>
+  <script>
+    const WRITE_PW_KEY   = 'erickops_write_session';
+    const DRAFT_KEY      = 'erickops_write_draft';
+    const OWNER_PASSWORD = '043043'; // UX only — real validation is server-side
+
+    /* ── Auth ── */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      // Set today as default date
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('dateInput').value = today;
+
+      // Auto-restore session
+      if (sessionStorage.getItem(WRITE_PW_KEY) === '1') {
+        showEditor();
+        loadDraft();
+      }
+    });
+
+    function authSubmit() {
+      const val = document.getElementById('pwField').value;
+      if (val === OWNER_PASSWORD) {
+        sessionStorage.setItem(WRITE_PW_KEY, '1');
+        showEditor();
+        loadDraft();
+      } else {
+        const f = document.getElementById('pwField');
+        f.classList.add('shake');
+        document.getElementById('pwErr').textContent = 'wrong password.';
+        setTimeout(() => f.classList.remove('shake'), 400);
+        f.value = ''; f.focus();
+      }
+    }
+
+    function toggleEye() {
+      const f = document.getElementById('pwField');
+      f.type = f.type === 'password' ? 'text' : 'password';
+    }
+
+    function showEditor() {
+      document.getElementById('authGate').style.display    = 'none';
+      document.getElementById('editorLayout').classList.add('visible');
+      document.getElementById('writeArea').focus();
+    }
+
+    function lockWriter() {
+      sessionStorage.removeItem(WRITE_PW_KEY);
+      document.getElementById('authGate').style.display    = 'block';
+      document.getElementById('editorLayout').classList.remove('visible');
+      document.getElementById('pwField').value = '';
+    }
+
+    /* ── Slug generator ── */
+    function makeSlug(title) {
+      return title.toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9\s-]/g, '')
+        .trim().replace(/\s+/g, '-').replace(/-+/g, '-')
+        .substring(0, 80);
+    }
+
+    /* ── Content change handler ── */
+    function onContentChange() {
+      updatePreview();
+      updateWordCount();
+      scheduleDraftSave();
+    }
+
+    function onMetaChange() {
+      updateSlugPreview();
+      scheduleDraftSave();
+    }
+
+    function updatePreview() {
+      const md  = document.getElementById('writeArea').value;
+      const box = document.getElementById('previewContent');
+      if (!md.trim()) {
+        box.innerHTML = '<div class="preview-empty">preview will appear here as you write</div>';
+        return;
+      }
+      marked.setOptions({ breaks: true, gfm: true });
+      box.innerHTML = marked.parse(md);
+    }
+
+    function updateWordCount() {
+      const txt   = document.getElementById('writeArea').value;
+      const words = txt.trim() ? txt.trim().split(/\s+/).length : 0;
+      const rt    = Math.max(1, Math.round(words / 200));
+      document.getElementById('wcCount').textContent = words.toLocaleString();
+      document.getElementById('rtEst').textContent   = rt;
+    }
+
+    function updateSlugPreview() {
+      const title = document.getElementById('titleInput').value;
+      const slug  = makeSlug(title);
+      document.getElementById('slugPreview').textContent = slug ? `/${slug}` : '';
+    }
+
+    /* ── Toolbar helpers ── */
+    function insertMd(before, after) {
+      const ta  = document.getElementById('writeArea');
+      const s   = ta.selectionStart, e = ta.selectionEnd;
+      const sel = ta.value.substring(s, e);
+      const rep = before + (sel || 'text') + after;
+      ta.setRangeText(rep, s, e, 'select');
+      ta.focus();
+      onContentChange();
+    }
+
+    function insertMdLine(prefix) {
+      const ta  = document.getElementById('writeArea');
+      const s   = ta.selectionStart;
+      const lineStart = ta.value.lastIndexOf('\n', s - 1) + 1;
+      const insert = '\n' + prefix;
+      ta.setRangeText(insert, s, s, 'end');
+      ta.focus();
+      onContentChange();
+    }
+
+    function insertCodeBlock() {
+      const ta  = document.getElementById('writeArea');
+      const s   = ta.selectionStart, e = ta.selectionEnd;
+      const sel = ta.value.substring(s, e);
+      const rep = '\n```\n' + (sel || 'your code here') + '\n```\n';
+      ta.setRangeText(rep, s, e, 'end');
+      ta.focus();
+      onContentChange();
+    }
+
+    /* ── Draft ── */
+    let draftTimer = null;
+    function scheduleDraftSave() {
+      clearTimeout(draftTimer);
+      draftTimer = setTimeout(saveDraft, 3000); // auto-save after 3s idle
+    }
+
+    function saveDraft() {
+      const draft = {
+        title:    document.getElementById('titleInput').value,
+        category: document.getElementById('catSelect').value,
+        tags:     document.getElementById('tagsInput').value,
+        date:     document.getElementById('dateInput').value,
+        content:  document.getElementById('writeArea').value,
+        saved:    new Date().toISOString(),
+      };
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+      const badge = document.getElementById('draftBadge');
+      badge.style.display = 'inline';
+      badge.textContent   = 'draft saved ' + new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
+      showToast('Draft saved', '');
+    }
+
+    function loadDraft() {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return;
+      try {
+        const d = JSON.parse(raw);
+        if (d.title)    document.getElementById('titleInput').value  = d.title;
+        if (d.category) document.getElementById('catSelect').value   = d.category;
+        if (d.tags)     document.getElementById('tagsInput').value   = d.tags;
+        if (d.date)     document.getElementById('dateInput').value   = d.date;
+        if (d.content)  document.getElementById('writeArea').value   = d.content;
+        updatePreview();
+        updateWordCount();
+        updateSlugPreview();
+        const badge = document.getElementById('draftBadge');
+        badge.style.display = 'inline';
+        badge.textContent   = 'draft restored';
+      } catch (e) { /* ignore */ }
+    }
+
+    /* ── Publish ── */
+    async function publishPost() {
+      const title   = document.getElementById('titleInput').value.trim();
+      const content = document.getElementById('writeArea').value.trim();
+      const cat     = document.getElementById('catSelect').value;
+      const tags    = document.getElementById('tagsInput').value;
+      const date    = document.getElementById('dateInput').value;
+      const words   = content ? content.trim().split(/\s+/).length : 0;
+      const rt      = Math.max(1, Math.round(words / 200)) + ' min read';
+
+      if (!title) { showToast('Please add a title first.', 'error'); return; }
+      if (!content) { showToast('Content is empty.', 'error'); return; }
+
+      const statusEl = document.getElementById('publishStatus');
+      const btnEl    = document.getElementById('publishBtn');
+
+      statusEl.className   = 'publish-status loading';
+      statusEl.innerHTML   = '🚀 Publishing... committing to GitHub, please wait.';
+      btnEl.disabled       = true;
+      btnEl.textContent    = 'Publishing...';
+
+      try {
+        const res = await fetch('/api/publish', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            password: OWNER_PASSWORD,
+            title, category: cat, tags, content, date, readTime: rt,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (data.ok) {
+          statusEl.className = 'publish-status success';
+          statusEl.innerHTML = `
+            ✅ Published! <strong>${data.file}</strong> committed to GitHub.<br>
+            <span style="font-size:12px;opacity:0.8;">Vercel will redeploy in ~30 seconds.</span><br><br>
+            <a href="post.html?slug=${data.slug}" style="color:#50ff96;text-decoration:underline;">
+              View post →
+            </a>
+            &nbsp;&nbsp;
+            <span style="cursor:pointer;color:#50ff96;text-decoration:underline;" onclick="clearEditor()">
+              Write another →
+            </span>
+          `;
+          // Clear draft
+          localStorage.removeItem(DRAFT_KEY);
+          document.getElementById('draftBadge').style.display = 'none';
+          showToast('🎉 Article published!', 'success');
+        } else {
+          throw new Error(data.error || 'Unknown error');
+        }
+      } catch (err) {
+        statusEl.className = 'publish-status error';
+        statusEl.innerHTML = `❌ Failed to publish: ${escapeHtml(err.message)}`;
+        showToast('Publish failed. Check the error above.', 'error');
+      } finally {
+        btnEl.disabled  = false;
+        btnEl.textContent = '🚀 Publish';
+      }
+    }
+
+    function clearEditor() {
+      document.getElementById('titleInput').value  = '';
+      document.getElementById('tagsInput').value   = '';
+      document.getElementById('writeArea').value   = '';
+      document.getElementById('dateInput').value   = new Date().toISOString().split('T')[0];
+      document.getElementById('catSelect').value   = 'random';
+      document.getElementById('publishStatus').className = 'publish-status';
+      document.getElementById('draftBadge').style.display = 'none';
+      updatePreview(); updateWordCount(); updateSlugPreview();
+    }
+
+    function escapeHtml(str) {
+      return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+  </script>
+</body>
+</html>
