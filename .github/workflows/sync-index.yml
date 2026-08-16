@@ -1,0 +1,75 @@
+name: Sync posts/index.json
+
+# Jalan otomatis setiap ada push ke main yang menyentuh folder posts/
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'posts/**'
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Sync index.json with actual .md files
+        run: |
+          node - << 'EOF'
+          const fs   = require('fs');
+          const path = require('path');
+
+          const indexPath = 'posts/index.json';
+          const postsDir  = 'posts';
+
+          // Read current index.json
+          let index = [];
+          try {
+            index = JSON.parse(fs.readFileSync(indexPath, 'utf-8'));
+          } catch (e) {
+            console.log('index.json not found or invalid, starting fresh.');
+          }
+
+          // Get all .md files currently in posts/
+          const mdFiles = fs.readdirSync(postsDir)
+            .filter(f => f.endsWith('.md'))
+            .map(f => f);
+
+          const before = index.length;
+
+          // Remove entries whose .md file no longer exists
+          index = index.filter(entry => {
+            const exists = mdFiles.includes(entry.file);
+            if (!exists) {
+              console.log(`Removing entry: "${entry.title}" (${entry.file} not found)`);
+            }
+            return exists;
+          });
+
+          const after = index.length;
+          const removed = before - after;
+
+          if (removed === 0) {
+            console.log('No orphaned entries found. index.json is already in sync.');
+            process.exit(0);
+          }
+
+          // Write updated index.json
+          fs.writeFileSync(indexPath, JSON.stringify(index, null, 2) + '\n', 'utf-8');
+          console.log(`Done. Removed ${removed} orphaned entr${removed === 1 ? 'y' : 'ies'}.`);
+          EOF
+
+      - name: Commit updated index.json (if changed)
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git diff --quiet posts/index.json || (
+            git add posts/index.json &&
+            git commit -m "chore: sync index.json — remove deleted articles" &&
+            git push
+          )
