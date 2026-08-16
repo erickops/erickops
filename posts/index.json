@@ -1,5 +1,17 @@
 [
   {
+    "slug": "test",
+    "title": "Test",
+    "excerpt": "Ini adalah testing dari sebuah fitur Write",
+    "category": "network",
+    "date": "2026-08-16",
+    "readTime": "1 min read",
+    "file": "test.md",
+    "tags": [
+      "networking"
+    ]
+  },
+  {
     "slug": "subnetting-untuk-pemula",
     "title": "Subnetting untuk Pemula: Dari Bingung Sampai Paham",
     "excerpt": "Subnetting itu salah satu topik yang bikin pusing hampir semua orang yang baru belajar jaringan. Tapi sebenarnya kalau udah ngerti konsep dasarnya, it clicks. Kita bahas dari awal.",
@@ -7,7 +19,12 @@
     "date": "2026-08-10",
     "readTime": "8 min read",
     "file": "subnetting-untuk-pemula.md",
-    "tags": ["networking", "subnetting", "ipv4", "writeup"]
+    "tags": [
+      "networking",
+      "subnetting",
+      "ipv4",
+      "writeup"
+    ]
   },
   {
     "slug": "nmap-cheatsheet",
@@ -17,7 +34,12 @@
     "date": "2026-08-05",
     "readTime": "6 min read",
     "file": "nmap-cheatsheet.md",
-    "tags": ["nmap", "security", "networking", "tools"]
+    "tags": [
+      "nmap",
+      "security",
+      "networking",
+      "tools"
+    ]
   },
   {
     "slug": "kenapa-aku-suka-linux",
@@ -27,7 +49,11 @@
     "date": "2026-07-28",
     "readTime": "5 min read",
     "file": "kenapa-aku-suka-linux.md",
-    "tags": ["linux", "opinion", "coding"]
+    "tags": [
+      "linux",
+      "opinion",
+      "coding"
+    ]
   },
   {
     "slug": "kucing-mengajarkan-sabar",
@@ -37,7 +63,11 @@
     "date": "2026-07-20",
     "readTime": "4 min read",
     "file": "kucing-mengajarkan-sabar.md",
-    "tags": ["cats", "life", "random"]
+    "tags": [
+      "cats",
+      "life",
+      "random"
+    ]
   },
   {
     "slug": "tentang-cinta-yang-diam",
@@ -47,7 +77,11 @@
     "date": "2026-07-15",
     "readTime": "3 min read",
     "file": "tentang-cinta-yang-diam.md",
-    "tags": ["love", "life", "curhat"]
+    "tags": [
+      "love",
+      "life",
+      "curhat"
+    ]
   },
   {
     "slug": "bash-scripting-dasar",
@@ -57,6 +91,11 @@
     "date": "2026-07-08",
     "readTime": "7 min read",
     "file": "bash-scripting-dasar.md",
-    "tags": ["bash", "scripting", "linux", "automation"]
+    "tags": [
+      "bash",
+      "scripting",
+      "linux",
+      "automation"
+    ]
   }
 ]
