@@ -1,0 +1,62 @@
+[
+  {
+    "slug": "subnetting-untuk-pemula",
+    "title": "Subnetting untuk Pemula: Dari Bingung Sampai Paham",
+    "excerpt": "Subnetting itu salah satu topik yang bikin pusing hampir semua orang yang baru belajar jaringan. Tapi sebenarnya kalau udah ngerti konsep dasarnya, it clicks. Kita bahas dari awal.",
+    "category": "network",
+    "date": "2026-08-10",
+    "readTime": "8 min read",
+    "file": "subnetting-untuk-pemula.md",
+    "tags": ["networking", "subnetting", "ipv4", "writeup"]
+  },
+  {
+    "slug": "nmap-cheatsheet",
+    "title": "Nmap Cheatsheet: Command yang Sering Aku Pakai",
+    "excerpt": "Nmap adalah teman terbaik siapapun yang ngulik jaringan atau security. Ini kumpulan command yang paling sering aku pakai sehari-hari, dari basic scan sampai yang lebih advance.",
+    "category": "security",
+    "date": "2026-08-05",
+    "readTime": "6 min read",
+    "file": "nmap-cheatsheet.md",
+    "tags": ["nmap", "security", "networking", "tools"]
+  },
+  {
+    "slug": "kenapa-aku-suka-linux",
+    "title": "Kenapa Aku Suka Linux (dan Susah Move On ke Windows)",
+    "excerpt": "Ada yang nanya kenapa aku lebih sering pakai Linux. Jawabannya panjang. Tapi singkatnya: karena Linux itu jujur. Dia tidak pura-pura simple padahal di dalamnya ribet.",
+    "category": "coding",
+    "date": "2026-07-28",
+    "readTime": "5 min read",
+    "file": "kenapa-aku-suka-linux.md",
+    "tags": ["linux", "opinion", "coding"]
+  },
+  {
+    "slug": "kucing-mengajarkan-sabar",
+    "title": "20 Kucing Mengajarkanku Arti Sabar",
+    "excerpt": "Dulu aku pikir sabar itu bisa dipelajari dari buku. Ternyata guru terbaik sabar ada di rumah, berbulu, dan terkadang suka muntah di atas keyboard.",
+    "category": "life",
+    "date": "2026-07-20",
+    "readTime": "4 min read",
+    "file": "kucing-mengajarkan-sabar.md",
+    "tags": ["cats", "life", "random"]
+  },
+  {
+    "slug": "tentang-cinta-yang-diam",
+    "title": "Tentang Cinta yang Diam",
+    "excerpt": "Ada cinta yang tidak perlu diucapkan. Tidak perlu diumumkan. Cukup ada, diam, dan terus dijaga dalam sunyi. Ini tentang cinta yang aku simpan sendiri.",
+    "category": "love",
+    "date": "2026-07-15",
+    "readTime": "3 min read",
+    "file": "tentang-cinta-yang-diam.md",
+    "tags": ["love", "life", "curhat"]
+  },
+  {
+    "slug": "bash-scripting-dasar",
+    "title": "Bash Scripting Dasar: Automasi Hal-Hal Kecil yang Bikin Hidup Lebih Mudah",
+    "excerpt": "Banyak hal yang bisa diotomasi dengan bash script sederhana. Mulai dari backup file, rename batch, sampai notifikasi. Berikut fondasi yang perlu kamu tahu.",
+    "category": "coding",
+    "date": "2026-07-08",
+    "readTime": "7 min read",
+    "file": "bash-scripting-dasar.md",
+    "tags": ["bash", "scripting", "linux", "automation"]
+  }
+]

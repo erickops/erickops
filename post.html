@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>erickops — loading...</title>
+
+  <!-- Open Graph (filled dynamically by JS once post loads) -->
+  <meta property="og:site_name" content="erickops.space">
+  <meta property="og:type"      content="article">
+  <meta property="og:title"     content="erickops" id="og-title">
+  <meta property="og:description" content="writing about networking, coding, cybersecurity, and life." id="og-desc">
+  <meta property="og:url"       content="https://erickops.space/post.html" id="og-url">
+  <meta name="twitter:card"     content="summary">
+  <meta name="twitter:site"     content="@erickops">
+
+  <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Circle-icons-rocket.svg/1200px-Circle-icons-rocket.svg.png">
+  <link rel="stylesheet" href="./style.css">
+
+  <!-- marked v4 (last version with highlight option still working) -->
+  <script src="https://cdn.jsdelivr.net/npm/marked@4.3.0/marked.min.js"></script>
+  <!-- highlight.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/tokyo-night-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+</head>
+<body class="bg-purple">
+
+  <div class="stars">
+
+    <div class="glowing_stars">
+      <div class="star"></div><div class="star"></div><div class="star"></div>
+      <div class="star"></div><div class="star"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="custom-navbar">
+      <div class="brand-logo">
+        <a href="index.html">erick<span>ops</span>.space</a>
+      </div>
+      <div class="hamburger" onclick="toggleNav()">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="navbar-links" id="navLinks">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="blog.html" class="active">Blog</a></li>
+          <li><a href="cats.html">Cats</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="https://linktr.ee/erickops" class="btn-request" target="_blank" rel="noopener">Find Me</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="page-wrapper">
+      <div class="post-page-wrapper">
+
+        <a href="blog.html" class="post-back">Back to all posts</a>
+
+        <div class="post-header" id="post-header">
+          <div class="loading">Loading post...</div>
+        </div>
+
+        <hr class="post-divider" id="post-divider" style="display:none;">
+
+        <article class="post-content" id="post-content"></article>
+
+        <hr class="post-divider" id="post-nav-divider" style="display:none; margin-top:60px;">
+        <div id="post-nav" style="display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-top:20px;"></div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>© <span id="year"></span> erickops.space</p>
+    </footer>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="./script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      const params = new URLSearchParams(window.location.search);
+      const slug = params.get('slug');
+
+      if (!slug) {
+        window.location.href = 'blog.html';
+        return;
+      }
+
+      try {
+        const allPosts = await fetchPosts();
+        const postIndex = allPosts.findIndex(p => p.slug === slug);
+        const post = allPosts[postIndex];
+
+        if (!post) {
+          document.getElementById('post-header').innerHTML =
+            '<div class="empty-state"><span class="empty-icon">🛸</span><p>Post not found.</p><a href="blog.html" class="btn-secondary" style="display:inline-block;margin-top:20px;">Back to Blog</a></div>';
+          return;
+        }
+
+        // ── Update page title & Open Graph tags ──
+        document.title = `erickops — ${post.title}`;
+        document.querySelector('#og-title').setAttribute('content', post.title);
+        document.querySelector('#og-desc').setAttribute('content', post.excerpt || '');
+        document.querySelector('#og-url').setAttribute('content', `https://erickops.space/post.html?slug=${post.slug}`);
+
+        // ── Render post header ──
+        const tagClass = getCategoryClass(post.category);
+        const tagLabel = getCategoryLabel(post.category);
+        document.getElementById('post-header').innerHTML = `
+          <span class="post-tag ${tagClass}">${tagLabel}</span>
+          <h1>${post.title}</h1>
+          <div class="post-info">
+            <span>📅 ${formatDate(post.date)}</span>
+            <span>⏱ ${post.readTime || '5 min read'}</span>
+            ${post.tags ? post.tags.map(t => `<span style="color:#ffffff">#${t}</span>`).join(' ') : ''}
+          </div>
+        `;
+        document.getElementById('post-divider').style.display = 'block';
+
+        // ── Fetch markdown ──
+        const mdText = await fetchMarkdown(post.file);
+        if (!mdText) throw new Error('File not found');
+
+        // ── Configure marked v4 with highlight.js ──
+        marked.setOptions({
+          highlight: function(code, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+              return hljs.highlight(code, { language: lang }).value;
+            }
+            return hljs.highlightAuto(code).value;
+          },
+          breaks: true,
+          gfm: true,
+          headerIds: true,
+          mangle: false
+        });
+
+        document.getElementById('post-content').innerHTML = marked.parse(mdText);
+
+        // Apply hljs to any code blocks marked didn't catch
+        document.querySelectorAll('pre code:not([class])').forEach(block => {
+          hljs.highlightElement(block);
+        });
+
+        // ── Prev / Next navigation ──
+        if (postIndex > 0 || postIndex < allPosts.length - 1) {
+          document.getElementById('post-nav-divider').style.display = 'block';
+          const nav = document.getElementById('post-nav');
+
+          if (postIndex < allPosts.length - 1) {
+            const prev = allPosts[postIndex + 1];
+            nav.innerHTML += `
+              <a href="post.html?slug=${prev.slug}"
+                 style="flex:1;min-width:200px;padding:16px;background:rgba(255,255,255,0.04);
+                        border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#ffffff;
+                        font-size:13px;transition:all 0.3s ease;text-decoration:none;"
+                 onmouseover="this.style.borderColor='rgba(255,203,57,0.3)';this.style.color='#ffcb39'"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#ffffff'">
+                <div style="font-size:11px;margin-bottom:5px;letter-spacing:1px;text-transform:uppercase;">← Older</div>
+                <div style="color:#fff;font-family:'Space Mono',monospace;font-size:13px;">${prev.title}</div>
+              </a>`;
+          } else {
+            nav.innerHTML += '<div style="flex:1"></div>';
+          }
+
+          if (postIndex > 0) {
+            const next = allPosts[postIndex - 1];
+            nav.innerHTML += `
+              <a href="post.html?slug=${next.slug}"
+                 style="flex:1;min-width:200px;padding:16px;background:rgba(255,255,255,0.04);
+                        border:1px solid rgba(255,255,255,0.08);border-radius:12px;color:#ffffff;
+                        font-size:13px;text-align:right;transition:all 0.3s ease;text-decoration:none;"
+                 onmouseover="this.style.borderColor='rgba(255,203,57,0.3)';this.style.color='#ffcb39'"
+                 onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#ffffff'">
+                <div style="font-size:11px;margin-bottom:5px;letter-spacing:1px;text-transform:uppercase;">Newer →</div>
+                <div style="color:#fff;font-family:'Space Mono',monospace;font-size:13px;">${next.title}</div>
+              </a>`;
+          }
+        }
+
+      } catch (e) {
+        document.getElementById('post-header').innerHTML =
+          '<div class="empty-state"><span class="empty-icon">💥</span><p>Failed to load post.</p></div>';
+        console.error(e);
+      }
+    });
+  </script>
+</body>
+</html>

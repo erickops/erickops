@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="erickops — writing about life, love, networking, coding, and cybersecurity.">
+  <title>erickops — home</title>
+
+  <!-- Open Graph -->
+  <meta property="og:site_name"    content="erickops.space">
+  <meta property="og:type"         content="website">
+  <meta property="og:title"        content="erickops.space">
+  <meta property="og:description"  content="writing about networking, coding, cybersecurity, life, and whatever's on my mind.">
+  <meta property="og:url"          content="https://erickops.space/">
+  <meta property="og:image"        content="https://erickops.space/assets/bg.jpg">
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:site"        content="@erickops">
+  <meta name="twitter:title"       content="erickops.space">
+  <meta name="twitter:description" content="writing about networking, coding, cybersecurity, life, and whatever's on my mind.">
+  <meta name="twitter:image"       content="https://erickops.space/assets/bg.jpg">
+  <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Circle-icons-rocket.svg/1200px-Circle-icons-rocket.svg.png">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body class="bg-purple">
+
+  <div class="stars">
+
+    <div class="objects">
+      <img class="object_rocket" src="./assets/rocket.svg" width="40px" alt="">
+      <div class="earth-moon">
+        <img class="object_earth" src="./assets/earth.svg" width="100px" alt="">
+        <img class="object_moon"  src="./assets/moon.svg"  width="80px"  alt="">
+      </div>
+      <div class="box_astronaut">
+        <img class="object_astronaut" src="./assets/astronaut.svg" width="140px" alt="">
+      </div>
+    </div>
+
+    <div class="glowing_stars">
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="custom-navbar">
+      <div class="brand-logo">
+        <a href="index.html">erick<span>ops</span>.space</a>
+      </div>
+      <div class="hamburger" id="hamburger" onclick="toggleNav()" aria-label="Toggle navigation">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="navbar-links" id="navLinks">
+        <ul>
+          <li><a href="index.html" class="active">Home</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="cats.html">Cats</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="https://linktr.ee/erickops" class="btn-request" target="_blank" rel="noopener">Find Me</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero-section">
+      <div class="hero-greeting">Hello, World! 👋</div>
+      <h1 class="hero-title">
+        I'm <span class="highlight">erickops</span>
+      </h1>
+      <p class="hero-sub" id="hero-sub"></p>
+      <div class="hero-buttons">
+        <a href="blog.html" class="btn-primary">Read My Stuff</a>
+        <a href="cats.html" class="btn-secondary">🐱 Meet My Cats</a>
+      </div>
+    </section>
+
+    <!-- Stats strip -->
+    <div class="stats-strip" id="stats-strip">
+      <div class="stat-item">
+        <span class="stat-number" id="stat-articles">0</span>
+        <span class="stat-label">Posts</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">20</span>
+        <span class="stat-label">Cats</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number" id="stat-categories">0</span>
+        <span class="stat-label">Topics</span>
+      </div>
+    </div>
+
+    <!-- Recent Posts -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-tag">// latest transmission</span>
+        <h2 class="section-title">Recent Posts</h2>
+        <p class="section-desc">A mix of tech write-ups, personal thoughts, and whatever's on my mind.</p>
+      </div>
+      <div class="posts-grid" id="recent-posts">
+        <div class="loading">Loading posts...</div>
+      </div>
+      <div style="text-align:center; margin-top: 40px;">
+        <a href="blog.html" class="btn-secondary">See All Posts →</a>
+      </div>
+    </div>
+
+    <!-- Cat teaser section -->
+    <div style="background: rgba(255,255,255,0.02); border-top: 1px solid rgba(255,203,57,0.08); border-bottom: 1px solid rgba(255,203,57,0.08);">
+      <div class="section">
+        <div class="section-header">
+          <span class="section-tag">// cat attendance system</span>
+          <h2 class="section-title">My Cats 🐱</h2>
+          <p class="section-desc">There's 20 of them. I take attendance every day to see who showed up — because an unattended cat is an unloved cat.</p>
+        </div>
+        <div style="text-align:center;">
+          <a href="cats.html" class="btn-primary">Open Cat Attendance</a>
+        </div>
+        <div id="cat-teaser" style="display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:30px; font-size:32px;">
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p>© <span id="year"></span> erickops.space — made with ☕ and 20 cats</p>
+    </footer>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="./script.js"></script>
+  <script>
+    const subtexts = [
+      "welcome to my space.",
+      "networking enthusiast. cat dad. late-night writer.",
+      "sometimes writing write-ups, sometimes writing feelings.",
+    ];
+    let si = 0;
+    function cycleSubtext() {
+      typeWriterLoop(document.getElementById('hero-sub'), subtexts[si % subtexts.length], 55, () => {
+        si++;
+        setTimeout(cycleSubtext, 2800);
+      });
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      cycleSubtext();
+      loadRecentPosts();
+      renderCatTeaser();
+      document.getElementById('year').textContent = new Date().getFullYear();
+    });
+
+    function renderCatTeaser() {
+      const emojis = ['😸','😺','🐱','😻','🙀','😹','😼','😽','🐾','🐈'];
+      const container = document.getElementById('cat-teaser');
+      for (let i = 0; i < 10; i++) {
+        const span = document.createElement('span');
+        span.textContent = emojis[i % emojis.length];
+        span.style.animationDelay = (i * 0.3) + 's';
+        span.style.animation = 'float 3s ease-in-out infinite';
+        container.appendChild(span);
+      }
+    }
+
+    async function loadRecentPosts() {
+      const container = document.getElementById('recent-posts');
+      try {
+        const posts = await fetchPosts();
+        const recent = posts.slice(0, 3);
+        document.getElementById('stat-articles').textContent = posts.length;
+        const cats = [...new Set(posts.map(p => p.category))];
+        document.getElementById('stat-categories').textContent = cats.length;
+        container.innerHTML = '';
+        recent.forEach((post, i) => {
+          const card = buildPostCard(post, i);
+          container.appendChild(card);
+        });
+      } catch (e) {
+        container.innerHTML = '<div class="empty-state"><span class="empty-icon">📡</span><p>No transmissions yet. Check back soon.</p></div>';
+      }
+    }
+  </script>
+</body>
+</html>

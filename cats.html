@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="erickops — cat attendance system.">
+  <title>erickops — cats attendance</title>
+
+  <!-- Open Graph -->
+  <meta property="og:site_name"    content="erickops.space">
+  <meta property="og:type"         content="website">
+  <meta property="og:title"        content="erickops — cat attendance">
+  <meta property="og:description"  content="20 cats. Daily attendance. Because an unattended cat is an unloved cat.">
+  <meta property="og:url"          content="https://erickops.space/cats.html">
+  <meta property="og:image"        content="https://erickops.space/assets/bg.jpg">
+  <meta name="twitter:card"        content="summary">
+  <meta name="twitter:site"        content="@erickops">
+  <meta name="twitter:title"       content="erickops — cat attendance">
+  <meta name="twitter:description" content="20 cats. Daily attendance. Because an unattended cat is an unloved cat.">
+  <link rel="shortcut icon" href="https://upload.wikimedia.org/wikipedia/commons/thumb/0/08/Circle-icons-rocket.svg/1200px-Circle-icons-rocket.svg.png">
+  <link rel="stylesheet" href="./style.css">
+  <style>
+    /* ── Content layer ── */
+    .cats-content-layer {
+      background: rgba(5, 0, 18, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 203, 57, 0.12);
+      padding: 32px 28px;
+      margin-bottom: 28px;
+    }
+
+    /* ── Date bar ── */
+    .attendance-date-bar {
+      background: rgba(255,255,255,0.06) !important;
+      border: 1px solid rgba(255,203,57,0.25) !important;
+      border-radius: 14px;
+      padding: 16px 22px;
+    }
+    .date-label { font-family:'Space Mono',monospace; font-size:14px; color:#ffcb39 !important; font-weight:700; }
+    .time-label  { font-family:'Space Mono',monospace; font-size:12px; color:#ffffff; margin-top:2px; }
+    .attendance-summary { font-size:14px; color:#ffffff !important; font-weight:600; }
+    .attendance-summary span { color:#50ff96 !important; font-family:'Space Mono',monospace; font-size:18px; }
+
+    /* ── Cat cards ── */
+    .cat-card {
+      background: rgba(8,2,25,0.75) !important;
+      border: 1px solid rgba(255,255,255,0.12) !important;
+      backdrop-filter: blur(8px);
+    }
+    .cat-card.present { background:rgba(0,30,15,0.82) !important; border-color:rgba(80,255,150,0.5) !important; }
+    .cat-card.absent  { background:rgba(30,5,5,0.82)  !important; border-color:rgba(255,80,80,0.4)  !important; }
+    .cat-name  { color:#fff !important; font-size:13px !important; text-shadow:0 1px 4px rgba(0,0,0,.8); font-weight:700 !important; }
+    .cat-status-badge { font-size:10px !important; font-weight:700 !important; letter-spacing:1.5px; }
+    .cat-time-chip {
+      font-family:'Space Mono',monospace; font-size:9px; color:#ffffff;
+      margin-top:4px; display:block; min-height:13px;
+    }
+    .cat-card.present .cat-time-chip { color:#3ab87a; }
+    .cat-card.absent  .cat-time-chip { color:#cc5555; }
+
+    /* View mode: kucing tidak clickable */
+    .view-mode .cat-card { cursor: default !important; }
+    .view-mode .cat-card:hover {
+      transform: none !important;
+      border-color: rgba(255,255,255,0.12) !important;
+      background: rgba(8,2,25,0.75) !important;
+    }
+    .view-mode .cat-card.present:hover { border-color:rgba(80,255,150,0.5) !important; background:rgba(0,30,15,0.82) !important; }
+    .view-mode .cat-card.absent:hover  { border-color:rgba(255,80,80,0.4)  !important; background:rgba(30,5,5,0.82)  !important; }
+
+    /* ── Lock banner ── */
+    .lock-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 22px;
+      background: rgba(255,203,57,0.06);
+      border: 1px solid rgba(255,203,57,0.2);
+      border-radius: 14px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .lock-banner .lock-icon { font-size: 20px; flex-shrink:0; }
+    .lock-banner .lock-text { flex:1; font-size:13px; color:#ffffff; line-height:1.5; }
+    .lock-banner .lock-text strong { color:#ffcb39; display:block; font-family:'Space Mono',monospace; font-size:12px; }
+
+    /* ── Unlock modal overlay ── */
+    .modal-overlay {
+      position: fixed; inset:0; z-index:9000;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(8px);
+      display: flex; align-items:center; justify-content:center;
+      padding: 20px;
+      opacity:0; pointer-events:none;
+      transition: opacity 0.25s ease;
+    }
+    .modal-overlay.open { opacity:1; pointer-events:all; }
+
+    .modal-box {
+      background: rgba(8,2,28,0.97);
+      border: 1px solid rgba(255,203,57,0.25);
+      border-radius: 20px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+    .modal-overlay.open .modal-box { transform: translateY(0); }
+
+    .modal-box .modal-icon { font-size: 40px; margin-bottom: 12px; display:block; }
+    .modal-box h2 {
+      font-family:'Space Mono',monospace; font-size:18px; color:#fff;
+      margin: 0 0 6px;
+    }
+    .modal-box p { font-size:13px; color:#ffffff; margin:0 0 24px; line-height:1.5; }
+
+    .pw-input-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .pw-input {
+      width: 100%;
+      padding: 12px 46px 12px 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50px;
+      color: #ffffff;
+      font-family: 'Space Mono', monospace;
+      font-size: 14px;
+      letter-spacing: 3px;
+      outline: none;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+    .pw-input:focus { border-color: rgba(255,203,57,0.5); }
+    .pw-input.error { border-color: rgba(255,80,80,0.6) !important; animation: shake 0.35s ease; }
+
+    .pw-toggle {
+      position:absolute; right:14px; top:50%; transform:translateY(-50%);
+      background:none; border:none; color:#ffffff; cursor:pointer; font-size:16px;
+      padding:4px; line-height:1;
+    }
+    .pw-toggle:hover { color:#ffffff; }
+
+    .pw-error-msg {
+      font-family:'Space Mono',monospace; font-size:11px; color:#ff8080;
+      min-height:18px; margin-bottom:10px; letter-spacing:1px;
+    }
+
+    .btn-unlock {
+      width:100%; padding:12px;
+      background: linear-gradient(135deg, rgba(255,203,57,0.9), rgba(255,180,30,0.9));
+      color: #0a0015; border:none; border-radius:50px;
+      font-family:'Dosis',sans-serif; font-weight:700; font-size:14px;
+      letter-spacing:2px; text-transform:uppercase;
+      cursor:pointer; transition:all 0.3s ease;
+    }
+    .btn-unlock:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(255,203,57,0.3); }
+    .btn-unlock:active { transform:translateY(0); }
+
+    .modal-cancel {
+      display:block; margin-top:14px; font-size:12px; color:#ffffff;
+      cursor:pointer; transition:color 0.2s;
+    }
+    .modal-cancel:hover { color:#ffffff; }
+
+    @keyframes shake {
+      0%,100% { transform:translateX(0); }
+      20%,60%  { transform:translateX(-8px); }
+      40%,80%  { transform:translateX(8px); }
+    }
+
+    /* ── Log entries ── */
+    .log-entry {
+      background: rgba(5,0,18,0.65) !important;
+      border: 1px solid rgba(255,255,255,0.08) !important;
+      backdrop-filter: blur(6px);
+    }
+    .log-entry:hover { border-color: rgba(255,203,57,0.2) !important; }
+    .log-date  { color:#ffcb39 !important; }
+    .log-count { color:#50ff96 !important; }
+    .log-cats-detail {
+      display:none; padding:8px 0 4px; font-size:11px;
+      border-top:1px solid rgba(255,255,255,0.05); margin-top:10px;
+    }
+    .log-cats-detail.open { display:block; }
+
+    /* ── Session badge ── */
+    .session-badge {
+      display:inline-flex; align-items:center; gap:6px;
+      padding:5px 14px; border-radius:50px;
+      font-family:'Space Mono',monospace; font-size:11px; font-weight:700;
+      letter-spacing:1px; text-transform:uppercase;
+    }
+    .session-badge.locked   { background:rgba(255,80,80,0.1);  color:#ff8080; border:1px solid rgba(255,80,80,0.25); }
+    .session-badge.unlocked { background:rgba(80,255,150,0.1); color:#50ff96; border:1px solid rgba(80,255,150,0.25); }
+
+    /* ── Live clock ── */
+    .live-clock {
+      font-family:'Space Mono',monospace; font-size:22px; color:#ffcb39;
+      font-weight:700; letter-spacing:2px; text-align:center;
+      text-shadow:0 0 20px rgba(255,203,57,0.4); margin-bottom:4px;
+    }
+    .live-date-small {
+      font-family:'Space Mono',monospace; font-size:11px;
+      color:#ffffff; text-align:center; letter-spacing:1px;
+    }
+
+    .cats-header h1 { text-shadow:0 2px 12px rgba(0,0,0,0.9); }
+    .cats-header p  { text-shadow:0 1px 6px rgba(0,0,0,0.8); color:#ffffff !important; }
+    .log-section h2 { color:#fff; text-shadow:0 1px 8px rgba(0,0,0,0.8); }
+
+    .cats-controls {
+      background:rgba(5,0,18,0.5); backdrop-filter:blur(10px);
+      border:1px solid rgba(255,255,255,0.06); border-radius:14px;
+      padding:14px 18px; position:sticky; bottom:20px; z-index:50;
+    }
+
+    @media (max-width:600px) {
+      .cats-content-layer { padding:18px 14px; }
+      .live-clock { font-size:18px; }
+      .attendance-date-bar { flex-direction:column; gap:10px; align-items:flex-start; }
+      .modal-box { padding:28px 20px; }
+    }
+  </style>
+</head>
+<body class="bg-purple">
+
+  <!-- ── Unlock Modal ── -->
+  <div class="modal-overlay" id="unlockModal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <span class="modal-icon">🔐</span>
+      <h2 id="modal-title">Owner Access</h2>
+      <p>Masukkan password untuk mengaktifkan mode absensi.</p>
+
+      <div class="pw-input-wrap">
+        <input class="pw-input" type="password" id="pwInput"
+               placeholder="password..." autocomplete="current-password"
+               onkeydown="if(event.key==='Enter')submitPassword()">
+        <button class="pw-toggle" onclick="togglePwVisible()" title="Tampilkan/sembunyikan">👁</button>
+      </div>
+      <div class="pw-error-msg" id="pwError"></div>
+
+      <button class="btn-unlock" onclick="submitPassword()">🔓 Unlock</button>
+      <span class="modal-cancel" onclick="closeModal()">Batal — tetap sebagai viewer</span>
+    </div>
+  </div>
+
+  <div class="stars">
+
+    <div class="glowing_stars">
+      <div class="star"></div><div class="star"></div><div class="star"></div>
+      <div class="star"></div><div class="star"></div>
+    </div>
+    <div class="objects">
+      <img class="object_rocket" src="./assets/rocket.svg" width="40px" alt="">
+    </div>
+
+    <!-- Navbar -->
+    <nav class="custom-navbar">
+      <div class="brand-logo">
+        <a href="index.html">erick<span>ops</span>.space</a>
+      </div>
+      <div class="hamburger" id="hamburger" onclick="toggleNav()">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="navbar-links" id="navLinks">
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="cats.html" class="active">Cats</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="https://linktr.ee/erickops" class="btn-request" target="_blank" rel="noopener">Find Me</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Page content -->
+    <div class="page-wrapper">
+      <div class="cats-page-wrapper">
+
+        <!-- Header -->
+        <div class="cats-header" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-bottom:28px;">
+          <div>
+            <h1 style="margin:0 0 6px;">// Cat Attendance 🐱</h1>
+            <p style="margin:0;">welcome, halaman ini buat meng-absen kucing aja setiap harinya.</p>
+          </div>
+          <!-- Session status badge -->
+          <div id="session-badge-wrap" style="padding-top:6px;">
+            <span class="session-badge locked" id="session-badge">🔒 View Only</span>
+          </div>
+        </div>
+
+        <!-- Lock banner (view mode only) -->
+        <div class="lock-banner" id="lock-banner">
+          <span class="lock-icon">👁️</span>
+          <div class="lock-text">
+            <strong>Mode: View Only</strong>
+            Kamu bisa melihat daftar kucing dan riwayat absensi, tapi tidak bisa mengubah data.
+            Kalau kamu pemiliknya, klik tombol di bawah untuk login.
+          </div>
+          <button class="btn-sm btn-warning" onclick="openModal()" style="flex-shrink:0;">🔓 Login</button>
+        </div>
+
+        <!-- Live clock -->
+        <div class="cats-content-layer" style="margin-bottom:20px;">
+          <div class="live-clock" id="live-clock">00:00:00</div>
+          <div class="live-date-small" id="live-date">Loading...</div>
+        </div>
+
+        <!-- Date & summary bar -->
+        <div class="attendance-date-bar cats-content-layer" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+          <div>
+            <div class="date-label" id="today-label">📅 Loading...</div>
+            <div class="time-label"  id="saved-time-label">Belum disimpan hari ini</div>
+          </div>
+          <div class="attendance-summary">
+            Hadir: <span id="present-count">0</span>
+            <span style="color:#ffffff;font-size:14px;font-weight:400;">/ 20 kucing</span>
+          </div>
+          <!-- Simpan button: hanya di edit mode -->
+          <div id="save-btn-wrap">
+            <button class="btn-sm btn-success" onclick="saveAttendance()" id="save-btn" style="display:none;">💾 Simpan</button>
+          </div>
+        </div>
+
+        <!-- Cat grid -->
+        <div class="cats-content-layer">
+          <div class="cats-grid view-mode" id="cats-grid"></div>
+        </div>
+
+        <!-- Controls (edit mode only) -->
+        <div class="cats-controls" id="edit-controls" style="display:none;">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+            <button class="btn-sm btn-success" onclick="markAll(true)">✅ Hadir Semua</button>
+            <button class="btn-sm btn-danger"  onclick="markAll(false)">❌ Reset Semua</button>
+            <button class="btn-sm btn-warning" onclick="saveAttendance()">💾 Simpan Absensi</button>
+            <button class="btn-sm" onclick="lockSession()"
+              style="margin-left:auto;background:rgba(255,80,80,0.1);border-color:rgba(255,80,80,0.3);color:#ff8080;">
+              🔒 Logout
+            </button>
+          </div>
+        </div>
+
+        <!-- History log -->
+        <div class="log-section cats-content-layer" style="margin-top:30px;">
+          <h2>// Riwayat Absensi</h2>
+          <div id="attendance-log"><div class="loading">Memuat riwayat...</div></div>
+        </div>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>© <span id="year"></span> erickops.space — 20 kucing dan counting</p>
+    </footer>
+
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <script src="./script.js"></script>
+  <script>
+    /* ═══════════════════════════════════════════════
+       PASSWORD — ganti sesuai keinginan kamu
+       Catatan: password ada di source code JS, cukup
+       untuk mencegah pengunjung kasual/iseng.
+    ═══════════════════════════════════════════════ */
+    const OWNER_PASSWORD = '043043';
+
+    /* ── Data ── */
+    const CATS = [
+      { id:'sipit',  name:'Sipit',  emoji:'👑' },
+      { id:'cakep',  name:'Cakep',  emoji:'😸' },
+      { id:'koala',  name:'Koala',  emoji:'🐱' },
+      { id:'kancil', name:'Kancil', emoji:'😻' },
+      { id:'jeki',   name:'Jeki',   emoji:'😼' },
+      { id:'bolu',   name:'Bolu',   emoji:'🙀' },
+      { id:'cici',   name:'Cici',   emoji:'😹' },
+      { id:'kribo',  name:'Kribo',  emoji:'😽' },
+      { id:'caca',   name:'Caca',   emoji:'🐾' },
+      { id:'abel',   name:'Abel',   emoji:'🐈' },
+      { id:'luna',   name:'Luna',   emoji:'🌙' },
+      { id:'oreo',   name:'Oreo',   emoji:'🍪' },
+      { id:'omi',    name:'Omi',    emoji:'⭐' },
+      { id:'ndut',   name:'Ndut',   emoji:'🌷' },
+      { id:'loki',   name:'Loki',   emoji:'⚡' },
+      { id:'gray',   name:'Gray',   emoji:'🩶' },
+      { id:'kiko',   name:'Kiko',   emoji:'😺' },
+      { id:'mimi',   name:'Mimi',   emoji:'💜' },
+      { id:'umis',   name:'Umis',   emoji:'🌟' },
+      { id:'oyen',   name:'Oyen',   emoji:'🍊' },
+    ];
+
+    const STORAGE_KEY  = 'erickops_cat_attendance_v2'; // v2 = per-entry log
+    const SESSION_KEY  = 'erickops_cats_unlocked';
+    let   todayKey     = '';
+    let   isOwner      = false;
+    let   attendance   = {};
+    // entries: Array<{ id, dateKey, datetime, savedAt, cats: {[catId]:{status,time}} }>
+    // Disimpan di localStorage[STORAGE_KEY]
+
+    /* ══════════════════════════════════
+       MODAL — unlock / lock
+    ══════════════════════════════════ */
+    function openModal() {
+      document.getElementById('unlockModal').classList.add('open');
+      document.getElementById('pwInput').value = '';
+      document.getElementById('pwError').textContent = '';
+      setTimeout(() => document.getElementById('pwInput').focus(), 100);
+    }
+
+    function closeModal() {
+      document.getElementById('unlockModal').classList.remove('open');
+    }
+
+    function togglePwVisible() {
+      const inp = document.getElementById('pwInput');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+    }
+
+    function submitPassword() {
+      const val = document.getElementById('pwInput').value;
+      if (val === OWNER_PASSWORD) {
+        sessionStorage.setItem(SESSION_KEY, '1');
+        closeModal();
+        activateEditMode();
+        showToast('🔓 Selamat datang, owner!', 'success');
+      } else {
+        const inp = document.getElementById('pwInput');
+        const err = document.getElementById('pwError');
+        inp.classList.add('error');
+        err.textContent = 'password salah. coba lagi.';
+        setTimeout(() => inp.classList.remove('error'), 400);
+        inp.value = '';
+        inp.focus();
+      }
+    }
+
+    function lockSession() {
+      sessionStorage.removeItem(SESSION_KEY);
+      isOwner = false;
+      applyViewMode();
+      showToast('🔒 Kamu sudah logout.', '');
+    }
+
+    /* ══════════════════════════════════
+       MODE SWITCHING
+    ══════════════════════════════════ */
+    function activateEditMode() {
+      isOwner = true;
+      // Badge
+      const badge = document.getElementById('session-badge');
+      badge.className = 'session-badge unlocked';
+      badge.textContent = '🔓 Owner Mode';
+      // Lock banner → ganti jadi logout bar
+      document.getElementById('lock-banner').innerHTML = `
+        <span class="lock-icon">✅</span>
+        <div class="lock-text">
+          <strong>Mode: Owner / Edit</strong>
+          Kamu bisa mengabsen kucing, reset, dan simpan data absensi.
+        </div>
+        <button class="btn-sm" onclick="lockSession()"
+          style="background:rgba(255,80,80,0.1);border:1px solid rgba(255,80,80,0.3);color:#ff8080;flex-shrink:0;">
+          🔒 Logout
+        </button>
+      `;
+      document.getElementById('lock-banner').style.borderColor = 'rgba(80,255,150,0.2)';
+      document.getElementById('lock-banner').style.background  = 'rgba(80,255,150,0.04)';
+      // Show controls
+      document.getElementById('edit-controls').style.display = 'block';
+      document.getElementById('save-btn').style.display       = 'inline-flex';
+      // Make cat grid interactive
+      document.getElementById('cats-grid').classList.remove('view-mode');
+    }
+
+    function applyViewMode() {
+      // Badge
+      const badge = document.getElementById('session-badge');
+      badge.className = 'session-badge locked';
+      badge.textContent = '🔒 View Only';
+      // Restore lock banner
+      document.getElementById('lock-banner').innerHTML = `
+        <span class="lock-icon">👁️</span>
+        <div class="lock-text">
+          <strong>Mode: View Only</strong>
+          Kamu bisa melihat daftar kucing dan riwayat absensi, tapi tidak bisa mengubah data.
+          Kalau kamu pemiliknya, klik tombol di bawah untuk login.
+        </div>
+        <button class="btn-sm btn-warning" onclick="openModal()" style="flex-shrink:0;">🔓 Login</button>
+      `;
+      document.getElementById('lock-banner').style.borderColor = '';
+      document.getElementById('lock-banner').style.background  = '';
+      // Hide controls
+      document.getElementById('edit-controls').style.display = 'none';
+      document.getElementById('save-btn').style.display       = 'none';
+      // Make cat grid view-only
+      document.getElementById('cats-grid').classList.add('view-mode');
+    }
+
+    /* ══════════════════════════════════
+       INIT
+    ══════════════════════════════════ */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      const now  = new Date();
+      todayKey   = now.toISOString().split('T')[0];
+
+      // Date label
+      document.getElementById('today-label').textContent =
+        '📅 ' + now.toLocaleDateString('id-ID', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+      // Load attendance — pakai entry terakhir hari ini sebagai state awal
+      const entries  = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const todayEntries = entries.filter(e => e.dateKey === todayKey);
+      const lastEntry    = todayEntries[todayEntries.length - 1] || null;
+
+      attendance = {};
+      if (lastEntry) {
+        for (const [id, val] of Object.entries(lastEntry.cats)) {
+          attendance[id] = (typeof val === 'string') ? { status: val, time: null } : val;
+        }
+        document.getElementById('saved-time-label').textContent =
+          `⏰ Terakhir disimpan: ${lastEntry.savedAt} · ${todayEntries.length}x hari ini`;
+      }
+
+      // Check session
+      if (sessionStorage.getItem(SESSION_KEY) === '1') {
+        activateEditMode();
+      }
+
+      startClock();
+      renderCats();
+      renderLog(entries);
+
+      // Close modal on overlay click
+      document.getElementById('unlockModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('unlockModal')) closeModal();
+      });
+    });
+
+    /* ══════════════════════════════════
+       CLOCK
+    ══════════════════════════════════ */
+    function startClock() {
+      function tick() {
+        const n = new Date();
+        document.getElementById('live-clock').textContent =
+          [n.getHours(), n.getMinutes(), n.getSeconds()]
+            .map(v => String(v).padStart(2,'0')).join(':');
+        document.getElementById('live-date').textContent =
+          n.toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+      }
+      tick(); setInterval(tick, 1000);
+    }
+    function nowTime() {
+      const n = new Date();
+      return [n.getHours(), n.getMinutes()].map(v => String(v).padStart(2,'0')).join(':');
+    }
+
+    /* ══════════════════════════════════
+       CAT GRID
+    ══════════════════════════════════ */
+    function renderCats() {
+      const grid = document.getElementById('cats-grid');
+      grid.innerHTML = '';
+      CATS.forEach(cat => {
+        const rec    = attendance[cat.id] || { status:null, time:null };
+        const status = rec.status || null;
+        const time   = rec.time   || null;
+        const card   = document.createElement('div');
+        card.className = `cat-card ${status==='present'?'present':status==='absent'?'absent':''}`;
+        card.id = `cat-${cat.id}`;
+        card.innerHTML = `
+          <span class="cat-emoji">${cat.emoji}</span>
+          <div class="cat-name">${cat.name}</div>
+          <span class="cat-status-badge">${status==='present'?'Hadir':status==='absent'?'Absen':'?'}</span>
+          <span class="cat-time-chip" id="time-${cat.id}">${time||''}</span>
+        `;
+        card.addEventListener('click', () => { if (isOwner) toggleCat(cat.id); });
+        grid.appendChild(card);
+      });
+      updateCount();
+    }
+
+    function toggleCat(id) {
+      const cur = (attendance[id] || {}).status || null;
+      const t   = nowTime();
+      if      (cur === null)      attendance[id] = { status:'present', time:t };
+      else if (cur === 'present') attendance[id] = { status:'absent',  time:t };
+      else                        attendance[id] = { status:null,      time:null };
+
+      const { status, time } = attendance[id];
+      const card = document.getElementById(`cat-${id}`);
+      card.className = `cat-card ${status==='present'?'present':status==='absent'?'absent':''}`;
+      card.querySelector('.cat-status-badge').textContent =
+        status==='present'?'Hadir':status==='absent'?'Absen':'?';
+      card.querySelector('.cat-time-chip').textContent = time || '';
+      updateCount();
+    }
+
+    function updateCount() {
+      const c = Object.values(attendance).filter(v => (v.status||v) === 'present').length;
+      document.getElementById('present-count').textContent = c;
+    }
+
+    function markAll(present) {
+      if (!isOwner) return;
+      const t = nowTime();
+      CATS.forEach(cat => {
+        attendance[cat.id] = present ? { status:'present', time:t } : { status:null, time:null };
+      });
+      renderCats();
+    }
+
+    function saveAttendance() {
+      if (!isOwner) return;
+
+      const now     = new Date();
+      const savedAt = now.toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+      const datetime = now.toISOString(); // untuk sorting akurat
+
+      // Buat entry baru (snapshot lengkap kondisi saat ini)
+      const newEntry = {
+        id:       datetime,          // unique ID = ISO string
+        dateKey:  todayKey,
+        datetime: datetime,
+        savedAt:  savedAt,
+        cats:     JSON.parse(JSON.stringify(attendance)) // deep copy
+      };
+
+      // Load existing entries, tambahkan yang baru, prune kalau > 500 entries
+      const entries = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      entries.push(newEntry);
+      if (entries.length > 500) entries.splice(0, entries.length - 500);
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+
+      // Hitung berapa kali hari ini
+      const todayCount = entries.filter(e => e.dateKey === todayKey).length;
+
+      document.getElementById('saved-time-label').textContent =
+        `⏰ Terakhir disimpan: ${savedAt} · ${todayCount}x hari ini`;
+
+      showToast(`✅ Absensi disimpan pukul ${savedAt}`, 'success');
+      renderLog(entries);
+    }
+
+    /* ══════════════════════════════════
+       HISTORY LOG — per-entry (bukan per-hari)
+    ══════════════════════════════════ */
+    function renderLog(entries) {
+      const container = document.getElementById('attendance-log');
+
+      // Urutkan terbaru di atas
+      const sorted = [...entries].sort((a, b) => b.datetime.localeCompare(a.datetime));
+
+      if (sorted.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <span class="empty-icon">📋</span>
+            <p>Belum ada riwayat absensi.<br>
+            <span style="font-size:12px;color:#ffffff;">Setiap kali kamu klik "Simpan", akan muncul di sini sebagai entri baru.</span></p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = '';
+
+      // Info strip
+      const todayCount = sorted.filter(e => e.dateKey === todayKey).length;
+      const infoBar = document.createElement('div');
+      infoBar.style.cssText = 'font-family:"Space Mono",monospace;font-size:11px;color:#ffffff;margin-bottom:14px;letter-spacing:1px;display:flex;gap:16px;flex-wrap:wrap;';
+      infoBar.innerHTML = `
+        <span>${sorted.length} total entri</span>
+        <span style="color:#ffcb39;">${todayCount}x disimpan hari ini</span>
+        <span>klik baris untuk detail</span>
+      `;
+      container.appendChild(infoBar);
+
+      // Group by date untuk header pemisah
+      let lastDateKey = null;
+
+      sorted.forEach((entry, idx) => {
+        const rec     = entry.cats || {};
+        const isToday = entry.dateKey === todayKey;
+
+        // Sisipkan header tanggal kalau ganti hari
+        if (entry.dateKey !== lastDateKey) {
+          lastDateKey = entry.dateKey;
+          const dateHeader = document.createElement('div');
+          dateHeader.style.cssText = `
+            font-family:'Space Mono',monospace;font-size:11px;
+            color:${isToday ? '#ffcb39' : '#ffffff'};
+            letter-spacing:2px;text-transform:uppercase;
+            padding:16px 0 6px;border-top:1px solid rgba(255,255,255,0.05);
+            margin-top:${idx===0?'0':'6px'};
+          `;
+          dateHeader.innerHTML = `
+            ${isToday ? '◉ ' : '○ '}${formatDateKey(entry.dateKey)}
+            ${isToday ? '<span style="color:#ffcb39;margin-left:6px;">— HARI INI</span>' : ''}
+          `;
+          container.appendChild(dateHeader);
+        }
+
+        const presentCats  = CATS.filter(c => {
+          const v = rec[c.id];
+          return v && (typeof v==='string' ? v==='present' : v.status==='present');
+        });
+        const absentCats   = CATS.filter(c => {
+          const v = rec[c.id];
+          return v && (typeof v==='string' ? v==='absent' : v.status==='absent');
+        });
+        const notRecorded  = CATS.filter(c => {
+          const v = rec[c.id];
+          return !v || (typeof v==='object' && !v.status);
+        });
+
+        const pct = Math.round((presentCats.length / 20) * 100);
+
+        const entryEl = document.createElement('div');
+        entryEl.style.marginBottom = '8px';
+        entryEl.innerHTML = `
+          <div class="log-entry" style="flex-direction:column;align-items:stretch;cursor:pointer;padding:12px 16px;"
+               onclick="toggleLogDetail('e${idx}')">
+
+            <!-- Baris utama -->
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+
+              <!-- Waktu simpan (ini yang utama, bukan tanggal) -->
+              <div style="flex:0 0 auto;min-width:90px;">
+                <div style="font-family:'Space Mono',monospace;font-size:15px;color:#ffcb39;font-weight:700;">
+                  ⏰ ${entry.savedAt}
+                </div>
+              </div>
+
+              <!-- Progress bar -->
+              <div style="flex:1;min-width:60px;height:5px;background:rgba(255,255,255,0.07);border-radius:3px;overflow:hidden;">
+                <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#50ff96,#3ab87a);border-radius:3px;"></div>
+              </div>
+
+              <!-- Count + arrow -->
+              <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+                <span class="log-count" style="font-size:14px;">
+                  ${presentCats.length}<span style="color:#ffffff;font-size:11px;">/20</span>
+                </span>
+                <span style="color:#ffffff;font-size:11px;font-family:'Space Mono',monospace;" id="log-arrow-e${idx}">▼</span>
+              </div>
+            </div>
+
+            <!-- Emoji preview -->
+            <div style="margin-top:6px;font-size:16px;letter-spacing:2px;opacity:0.8;">
+              ${presentCats.slice(0,12).map(c=>(CATS.find(x=>x.id===c.id)||{emoji:'🐱'}).emoji).join('')}
+              ${presentCats.length>12?`<span style="font-size:10px;color:#ffffff;margin-left:3px;">+${presentCats.length-12}</span>`:''}
+              ${presentCats.length===0?'<span style="font-size:11px;color:#ffffff;">tidak ada yang tercatat hadir</span>':''}
+            </div>
+
+            <!-- Detail collapsible -->
+            <div class="log-cats-detail" id="log-detail-e${idx}" style="margin-top:10px;">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+
+                <div>
+                  <div style="font-family:'Space Mono',monospace;font-size:10px;color:#50ff96;
+                    letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">
+                    ✅ Hadir (${presentCats.length})
+                  </div>
+                  ${presentCats.length>0
+                    ? presentCats.map(c => {
+                        const v  = rec[c.id];
+                        const t  = (v && typeof v==='object' && v.time) ? v.time : null;
+                        const cd = CATS.find(x=>x.id===c.id);
+                        return `<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+                          <span style="font-size:15px;">${cd?cd.emoji:'🐱'}</span>
+                          <span style="color:#ffffff;font-size:12px;">${c.name}</span>
+                          ${t?`<span style="color:#3ab87a;font-family:'Space Mono',monospace;font-size:9px;margin-left:auto;">${t}</span>`:''}
+                        </div>`;
+                      }).join('')
+                    : '<span style="color:#ffffff;font-size:12px;">—</span>'}
+                </div>
+
+                <div>
+                  ${absentCats.length>0?`
+                    <div style="font-family:'Space Mono',monospace;font-size:10px;color:#ff8080;
+                      letter-spacing:1px;text-transform:uppercase;font-weight:700;margin-bottom:8px;">
+                      ❌ Absen (${absentCats.length})
+                    </div>
+                    ${absentCats.map(c=>{
+                      const cd=CATS.find(x=>x.id===c.id);
+                      return`<div style="display:flex;align-items:center;gap:5px;margin-bottom:4px;">
+                        <span style="font-size:15px;opacity:0.5;">${cd?cd.emoji:'🐱'}</span>
+                        <span style="color:#ffffff;font-size:12px;">${c.name}</span>
+                      </div>`;
+                    }).join('')}
+                  `:''}
+                  ${notRecorded.length>0?`
+                    <div style="font-family:'Space Mono',monospace;font-size:10px;color:#ffffff;
+                      letter-spacing:1px;text-transform:uppercase;font-weight:700;
+                      margin-bottom:6px;margin-top:${absentCats.length>0?'10px':'0'};">
+                      ❓ Tidak dicatat (${notRecorded.length})
+                    </div>
+                    <div style="color:#ffffff;font-size:11px;line-height:1.8;">
+                      ${notRecorded.map(c=>c.name).join(', ')}
+                    </div>
+                  `:''}
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        `;
+        container.appendChild(entryEl);
+      });
+    }
+
+    function toggleLogDetail(id) {
+      const d = document.getElementById(`log-detail-${id}`);
+      const a = document.getElementById(`log-arrow-${id}`);
+      if (!d) return;
+      const open = d.classList.toggle('open');
+      if (a) a.textContent = open ? '▲' : '▼';
+    }
+
+    function formatDateKey(key) {
+      return new Date(key+'T00:00:00').toLocaleDateString('id-ID',
+        { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+    }
+  </script>
+</body>
+</html>
