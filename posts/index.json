@@ -1,17 +1,5 @@
 [
   {
-    "slug": "test",
-    "title": "Test",
-    "excerpt": "Ini adalah testing dari sebuah fitur Write",
-    "category": "network",
-    "date": "2026-08-16",
-    "readTime": "1 min read",
-    "file": "test.md",
-    "tags": [
-      "networking"
-    ]
-  },
-  {
     "slug": "subnetting-untuk-pemula",
     "title": "Subnetting untuk Pemula: Dari Bingung Sampai Paham",
     "excerpt": "Subnetting itu salah satu topik yang bikin pusing hampir semua orang yang baru belajar jaringan. Tapi sebenarnya kalau udah ngerti konsep dasarnya, it clicks. Kita bahas dari awal.",
