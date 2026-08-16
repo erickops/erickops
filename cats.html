@@ -366,11 +366,15 @@
   <script src="./script.js"></script>
   <script>
     /* ═══════════════════════════════════════════════
-       PASSWORD — ganti sesuai keinginan kamu
-       Catatan: password ada di source code JS, cukup
-       untuk mencegah pengunjung kasual/iseng.
+       Password check — hash only, never plain text.
+       Real validation happens server-side in /api/*.
     ═══════════════════════════════════════════════ */
-    const OWNER_PASSWORD = '043043';
+    const PW_HASH = 'a98a78feec80f204b8ceffec71e5af6e11223d6ffcc91141bad0ba08f4a8d1d5';
+
+    async function hashInput(str) {
+      const buf  = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
 
     /* ── Data ── */
     const CATS = [
@@ -424,20 +428,23 @@
 
     function submitPassword() {
       const val = document.getElementById('pwInput').value;
-      if (val === OWNER_PASSWORD) {
-        sessionStorage.setItem(SESSION_KEY, '1');
-        closeModal();
-        activateEditMode();
-        showToast('🔓 Selamat datang, owner!', 'success');
-      } else {
-        const inp = document.getElementById('pwInput');
-        const err = document.getElementById('pwError');
-        inp.classList.add('error');
-        err.textContent = 'password salah. coba lagi.';
-        setTimeout(() => inp.classList.remove('error'), 400);
-        inp.value = '';
-        inp.focus();
-      }
+      hashInput(val).then(hash => {
+        if (hash === PW_HASH) {
+          sessionStorage.setItem(SESSION_KEY, '1');
+          sessionStorage.setItem(SESSION_KEY + '_pw', val); // store for API calls
+          closeModal();
+          activateEditMode();
+          showToast('🔓 Selamat datang, owner!', 'success');
+        } else {
+          const inp = document.getElementById('pwInput');
+          const err = document.getElementById('pwError');
+          inp.classList.add('error');
+          err.textContent = 'password salah. coba lagi.';
+          setTimeout(() => inp.classList.remove('error'), 400);
+          inp.value = '';
+          inp.focus();
+        }
+      });
     }
 
     function lockSession() {
@@ -660,7 +667,7 @@
       fetch('/api/attendance', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ password: OWNER_PASSWORD, entry: newEntry }),
+        body:    JSON.stringify({ password: sessionStorage.getItem(SESSION_KEY + '_pw') || '', entry: newEntry }),
       })
       .then(r => r.json())
       .then(data => {

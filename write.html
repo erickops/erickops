@@ -474,7 +474,12 @@
   <script>
     const WRITE_PW_KEY   = 'erickops_write_session';
     const DRAFT_KEY      = 'erickops_write_draft';
-    const OWNER_PASSWORD = '043043'; // UX only — real validation is server-side
+    const PW_HASH = 'a98a78feec80f204b8ceffec71e5af6e11223d6ffcc91141bad0ba08f4a8d1d5';
+
+    async function hashInput(str) {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+    }
 
     /* ── Auth ── */
     document.addEventListener('DOMContentLoaded', () => {
@@ -493,17 +498,20 @@
 
     function authSubmit() {
       const val = document.getElementById('pwField').value;
-      if (val === OWNER_PASSWORD) {
-        sessionStorage.setItem(WRITE_PW_KEY, '1');
-        showEditor();
-        loadDraft();
-      } else {
-        const f = document.getElementById('pwField');
-        f.classList.add('shake');
-        document.getElementById('pwErr').textContent = 'wrong password.';
-        setTimeout(() => f.classList.remove('shake'), 400);
-        f.value = ''; f.focus();
-      }
+      hashInput(val).then(hash => {
+        if (hash === PW_HASH) {
+          sessionStorage.setItem(WRITE_PW_KEY, '1');
+          sessionStorage.setItem(WRITE_PW_KEY + '_pw', val);
+          showEditor();
+          loadDraft();
+        } else {
+          const f = document.getElementById('pwField');
+          f.classList.add('shake');
+          document.getElementById('pwErr').textContent = 'wrong password.';
+          setTimeout(() => f.classList.remove('shake'), 400);
+          f.value = ''; f.focus();
+        }
+      });
     }
 
     function toggleEye() {
@@ -519,6 +527,7 @@
 
     function lockWriter() {
       sessionStorage.removeItem(WRITE_PW_KEY);
+      sessionStorage.removeItem(WRITE_PW_KEY + '_pw');
       document.getElementById('authGate').style.display    = 'block';
       document.getElementById('editorLayout').classList.remove('visible');
       document.getElementById('pwField').value = '';
@@ -669,7 +678,7 @@
           method:  'POST',
           headers: { 'Content-Type': 'application/json' },
           body:    JSON.stringify({
-            password: OWNER_PASSWORD,
+            password: sessionStorage.getItem(WRITE_PW_KEY + '_pw') || '',
             title, category: cat, tags, content, date, readTime: rt,
           }),
         });
