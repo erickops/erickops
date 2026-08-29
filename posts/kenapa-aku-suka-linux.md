@@ -1,4 +1,4 @@
-# Kenapa Aku Suka Linux (dan Susah Move On ke Windows)
+# Kenapa Suka Linux
 
 Ini bukan artikel "Linux vs Windows yang mana lebih baik". Kalau mau berdebat itu, banyak thread Reddit yang lebih seru. Ini cuma tulisan tentang kenapa aku sendiri lebih nyaman di Linux dan apa yang bikin aku balik terus ke sana.
 
