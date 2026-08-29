@@ -58,20 +58,6 @@
     ]
   },
   {
-    "slug": "tentang-cinta-yang-diam",
-    "title": "Tentang Cinta yang Diam",
-    "excerpt": "Ada cinta yang tidak perlu diucapkan. Tidak perlu diumumkan. Cukup ada, diam, dan terus dijaga dalam sunyi. Ini tentang cinta yang aku simpan sendiri.",
-    "category": "love",
-    "date": "2026-07-15",
-    "readTime": "3 min read",
-    "file": "tentang-cinta-yang-diam.md",
-    "tags": [
-      "love",
-      "life",
-      "curhat"
-    ]
-  },
-  {
     "slug": "bash-scripting-dasar",
     "title": "Bash Scripting Dasar: Automasi Hal-Hal Kecil yang Bikin Hidup Lebih Mudah",
     "excerpt": "Banyak hal yang bisa diotomasi dengan bash script sederhana. Mulai dari backup file, rename batch, sampai notifikasi. Berikut fondasi yang perlu kamu tahu.",
