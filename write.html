@@ -368,10 +368,23 @@
         <!-- ── EDITOR (hidden until auth) ── -->
         <div class="editor-layout" id="editorLayout">
 
-          <!-- Write header -->
+          <!-- Write header with tabs -->
           <div class="write-header" style="grid-column:1/-1;">
-            <h1>// New Post ✍️</h1>
-            <div style="display:flex;gap:10px;align-items:center;">
+            <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+              <h1 id="pageTitle">// New Post ✍️</h1>
+            </div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+              <!-- Tab switcher -->
+              <div style="display:flex;gap:4px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:50px;padding:4px;">
+                <button id="tabWrite"  onclick="switchTab('write')"
+                  style="padding:6px 16px;border-radius:50px;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;background:#ffcb39;color:#0a0015;">
+                  ✍️ Write
+                </button>
+                <button id="tabManage" onclick="switchTab('manage')"
+                  style="padding:6px 16px;border-radius:50px;border:none;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;transition:all 0.2s;background:transparent;color:#fff;">
+                  📋 Manage
+                </button>
+              </div>
               <span class="draft-badge" id="draftBadge" style="display:none;">draft saved</span>
               <button class="btn-secondary" style="padding:8px 18px;font-size:12px;" onclick="lockWriter()">🔒 Logout</button>
             </div>
@@ -458,6 +471,83 @@
               </button>
             </div>
           </div>
+
+          <!-- ── MANAGE TAB ── -->
+          <div id="managePanel" style="display:none;grid-column:1/-1;">
+
+            <div style="background:rgba(5,0,18,0.7);backdrop-filter:blur(12px);border:1px solid rgba(255,203,57,0.1);border-radius:16px;padding:24px 28px;">
+              <div style="font-family:'Space Mono',monospace;font-size:11px;color:#ffcb39;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">
+                // All Posts
+              </div>
+              <div id="manageList"><div class="loading">Loading posts...</div></div>
+            </div>
+
+            <!-- Edit form (hidden until article selected) -->
+            <div id="editForm" style="display:none;margin-top:20px;background:rgba(5,0,18,0.7);backdrop-filter:blur(12px);border:1px solid rgba(255,203,57,0.15);border-radius:16px;padding:24px 28px;">
+              <div style="font-family:'Space Mono',monospace;font-size:11px;color:#ffcb39;letter-spacing:2px;text-transform:uppercase;margin-bottom:20px;">
+                // Editing: <span id="editingTitle" style="color:#fff;"></span>
+              </div>
+              <input type="hidden" id="editSlug">
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                <div class="field-group" style="grid-column:1/-1;">
+                  <label class="field-label">Title</label>
+                  <input class="field-input title-input" type="text" id="editTitle">
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Category</label>
+                  <select class="field-select" id="editCategory">
+                    <option value="network">📡 Network</option>
+                    <option value="security">🔐 Security</option>
+                    <option value="coding">💻 Coding</option>
+                    <option value="life">🌱 Life</option>
+                    <option value="love">💙 Love</option>
+                    <option value="random">✨ Random</option>
+                  </select>
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Tags</label>
+                  <input class="field-input" type="text" id="editTags" placeholder="tag1, tag2">
+                </div>
+                <div class="field-group">
+                  <label class="field-label">Date</label>
+                  <input class="field-input" type="date" id="editDate">
+                </div>
+              </div>
+
+              <!-- Edit content area -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;">
+                <div class="panel">
+                  <div class="panel-header">
+                    <span class="panel-title">// Markdown</span>
+                    <div class="toolbar">
+                      <button class="tb-btn" onclick="insertEditMd('**','**')">B</button>
+                      <button class="tb-btn" onclick="insertEditMd('*','*')"><em>i</em></button>
+                      <button class="tb-btn" onclick="insertEditMd('\`','\`')">` `</button>
+                      <button class="tb-btn" onclick="insertEditMdLine('## ')">H2</button>
+                      <button class="tb-btn" onclick="insertEditMdLine('### ')">H3</button>
+                      <button class="tb-btn" onclick="insertEditCodeBlock()">```</button>
+                    </div>
+                  </div>
+                  <textarea class="write-area" id="editContent" oninput="updateEditPreview()" style="min-height:400px;"></textarea>
+                </div>
+                <div class="panel">
+                  <div class="panel-header"><span class="panel-title">// Preview</span></div>
+                  <div class="preview-content" id="editPreview" style="min-height:400px;">
+                    <div class="preview-empty">preview will appear here</div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="editStatus" class="publish-status"></div>
+
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px;">
+                <button class="btn-secondary" style="padding:10px 20px;font-size:12px;" onclick="cancelEdit()">✕ Cancel</button>
+                <button class="btn-primary"   style="padding:10px 24px;font-size:12px;" onclick="submitEdit()" id="editBtn">💾 Save Changes</button>
+              </div>
+            </div>
+
+          </div><!-- /managePanel -->
 
         </div><!-- /editor-layout -->
       </div>
@@ -728,6 +818,216 @@
 
     function escapeHtml(str) {
       return (str||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    /* ══════════════════════════════════
+       TAB SWITCHING
+    ══════════════════════════════════ */
+    function switchTab(tab) {
+      const isWrite = tab === 'write';
+
+      // Toggle panels
+      document.querySelectorAll('.meta-bar, .panel, .action-bar, .publish-status')
+        .forEach(el => el.style.display = isWrite ? '' : 'none');
+      document.getElementById('managePanel').style.display = isWrite ? 'none' : 'block';
+      document.getElementById('pageTitle').textContent = isWrite ? '// New Post ✍️' : '// Manage Posts 📋';
+
+      // Tab button styles
+      const btnWrite  = document.getElementById('tabWrite');
+      const btnManage = document.getElementById('tabManage');
+      btnWrite.style.background  = isWrite ? '#ffcb39' : 'transparent';
+      btnWrite.style.color       = isWrite ? '#0a0015' : '#fff';
+      btnManage.style.background = isWrite ? 'transparent' : '#ffcb39';
+      btnManage.style.color      = isWrite ? '#fff' : '#0a0015';
+
+      if (!isWrite) loadManageList();
+    }
+
+    /* ══════════════════════════════════
+       MANAGE — list all posts
+    ══════════════════════════════════ */
+    async function loadManageList() {
+      const container = document.getElementById('manageList');
+      container.innerHTML = '<div class="loading">Loading posts...</div>';
+      try {
+        const posts = await fetchPosts();
+        if (posts.length === 0) {
+          container.innerHTML = '<div class="empty-state"><span class="empty-icon">📭</span><p>No posts yet.</p></div>';
+          return;
+        }
+        container.innerHTML = '';
+        posts.forEach(post => {
+          const row = document.createElement('div');
+          row.style.cssText = 'display:flex;align-items:center;gap:14px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06);flex-wrap:wrap;';
+          row.innerHTML = `
+            <div style="flex:1;min-width:180px;">
+              <div style="font-family:\'Space Mono\',monospace;font-size:13px;color:#fff;margin-bottom:3px;">${escapeHtml(post.title)}</div>
+              <div style="font-size:11px;color:rgba(255,255,255,0.4);">${post.date} · ${post.readTime}</div>
+            </div>
+            <span class="post-tag ${getCategoryClass(post.category)}" style="flex-shrink:0;">${getCategoryLabel(post.category)}</span>
+            <div style="display:flex;gap:8px;flex-shrink:0;">
+              <button class="tb-btn" onclick="openEdit('${escapeHtml(post.slug)}')"
+                style="padding:6px 14px;color:#ffcb39;border-color:rgba(255,203,57,0.3);">
+                ✏️ Edit
+              </button>
+              <button class="tb-btn" onclick="confirmDelete('${escapeHtml(post.slug)}', '${escapeHtml(post.title)}')"
+                style="padding:6px 14px;color:#ff8080;border-color:rgba(255,80,80,0.3);">
+                🗑️ Delete
+              </button>
+            </div>
+          `;
+          container.appendChild(row);
+        });
+      } catch (e) {
+        container.innerHTML = '<div class="empty-state"><span class="empty-icon">💥</span><p>Failed to load posts.</p></div>';
+      }
+    }
+
+    /* ══════════════════════════════════
+       EDIT
+    ══════════════════════════════════ */
+    async function openEdit(slug) {
+      const editForm = document.getElementById('editForm');
+      editForm.style.display = 'block';
+      editForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      document.getElementById('editSlug').value      = slug;
+      document.getElementById('editingTitle').textContent = slug;
+      document.getElementById('editContent').value   = '';
+      document.getElementById('editStatus').className = 'publish-status';
+
+      // Load current metadata
+      try {
+        const posts = await fetchPosts();
+        const post  = posts.find(p => p.slug === slug);
+        if (post) {
+          document.getElementById('editTitle').value    = post.title;
+          document.getElementById('editCategory').value = post.category;
+          document.getElementById('editTags').value     = (post.tags || []).join(', ');
+          document.getElementById('editDate').value     = post.date;
+          document.getElementById('editingTitle').textContent = post.title;
+        }
+
+        // Load current .md content from API
+        const mdText = await fetchMarkdown(post.file);
+        if (mdText) {
+          document.getElementById('editContent').value = mdText;
+          updateEditPreview();
+        }
+      } catch (e) {
+        showToast('Failed to load article content.', 'error');
+      }
+    }
+
+    function cancelEdit() {
+      document.getElementById('editForm').style.display = 'none';
+    }
+
+    function updateEditPreview() {
+      const md  = document.getElementById('editContent').value;
+      const box = document.getElementById('editPreview');
+      if (!md.trim()) {
+        box.innerHTML = '<div class="preview-empty">preview will appear here</div>';
+        return;
+      }
+      marked.setOptions({ breaks: true, gfm: true });
+      box.innerHTML = marked.parse(md);
+    }
+
+    function insertEditMd(before, after) {
+      const ta  = document.getElementById('editContent');
+      const s   = ta.selectionStart, e = ta.selectionEnd;
+      const sel = ta.value.substring(s, e);
+      ta.setRangeText(before + (sel || 'text') + after, s, e, 'select');
+      ta.focus(); updateEditPreview();
+    }
+    function insertEditMdLine(prefix) {
+      const ta = document.getElementById('editContent');
+      const s  = ta.selectionStart;
+      ta.setRangeText('\n' + prefix, s, s, 'end');
+      ta.focus(); updateEditPreview();
+    }
+    function insertEditCodeBlock() {
+      const ta  = document.getElementById('editContent');
+      const s   = ta.selectionStart, e = ta.selectionEnd;
+      const sel = ta.value.substring(s, e);
+      ta.setRangeText('\n```\n' + (sel || 'code') + '\n```\n', s, e, 'end');
+      ta.focus(); updateEditPreview();
+    }
+
+    async function submitEdit() {
+      const slug     = document.getElementById('editSlug').value;
+      const title    = document.getElementById('editTitle').value.trim();
+      const category = document.getElementById('editCategory').value;
+      const tags     = document.getElementById('editTags').value;
+      const date     = document.getElementById('editDate').value;
+      const content  = document.getElementById('editContent').value.trim();
+
+      if (!content) { showToast('Content is empty.', 'error'); return; }
+
+      const statusEl = document.getElementById('editStatus');
+      const btnEl    = document.getElementById('editBtn');
+      statusEl.className   = 'publish-status loading';
+      statusEl.innerHTML   = '💾 Saving changes...';
+      btnEl.disabled       = true;
+      btnEl.textContent    = 'Saving...';
+
+      try {
+        const res = await fetch('/api/edit', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            password: sessionStorage.getItem(WRITE_PW_KEY + '_pw') || '',
+            slug, title, category, tags, content, date,
+          }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          statusEl.className = 'publish-status success';
+          statusEl.innerHTML = `✅ Saved! Vercel will redeploy in ~30 seconds. <span style="cursor:pointer;text-decoration:underline;margin-left:10px;" onclick="cancelEdit();loadManageList()">← Back to list</span>`;
+          showToast('✅ Article updated!', 'success');
+        } else {
+          throw new Error(data.error || 'Unknown error');
+        }
+      } catch (err) {
+        statusEl.className = 'publish-status error';
+        statusEl.innerHTML = `❌ Failed: ${escapeHtml(err.message)}`;
+        showToast('Save failed.', 'error');
+      } finally {
+        btnEl.disabled    = false;
+        btnEl.textContent = '💾 Save Changes';
+      }
+    }
+
+    /* ══════════════════════════════════
+       DELETE
+    ══════════════════════════════════ */
+    function confirmDelete(slug, title) {
+      if (!confirm(`Delete "${title}"?\n\nThis cannot be undone.`)) return;
+      doDelete(slug, title);
+    }
+
+    async function doDelete(slug, title) {
+      showToast('🗑️ Deleting...', '');
+      try {
+        const res = await fetch('/api/delete', {
+          method:  'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body:    JSON.stringify({
+            password: sessionStorage.getItem(WRITE_PW_KEY + '_pw') || '',
+            slug,
+          }),
+        });
+        const data = await res.json();
+        if (data.ok) {
+          showToast(`🗑️ "${title}" deleted. Redeploying...`, 'success');
+          loadManageList();
+        } else {
+          throw new Error(data.error || 'Unknown error');
+        }
+      } catch (err) {
+        showToast(`Delete failed: ${err.message}`, 'error');
+      }
     }
   </script>
 </body>
