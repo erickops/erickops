@@ -1,89 +1,152 @@
 [
   {
-    "slug": "subnetting-untuk-pemula",
-    "title": "Subnetting untuk Pemula: Dari Bingung Sampai Paham",
-    "excerpt": "Subnetting itu salah satu topik yang bikin pusing hampir semua orang yang baru belajar jaringan. Tapi sebenarnya kalau udah ngerti konsep dasarnya, it clicks. Kita bahas dari awal.",
+    "slug": "apa-itu-jaringan-komputer",
+    "title": "Apa Itu Jaringan Komputer?",
+    "excerpt": "Kalau kamu pernah kirim pesan lewat WhatsApp, nonton YouTube, atau browsing internet — semuanya bisa terjadi karena ada yang namanya jaringan komputer. Tapi apa sebenarnya jaringan komputer itu?",
     "category": "network",
+    "date": "2026-08-16",
+    "readTime": "6 min read",
+    "file": "apa-itu-jaringan-komputer.md",
+    "tags": ["networking", "fundamental", "beginner"]
+  },
+  {
+    "slug": "osi-model-7-layer",
+    "title": "OSI Model: Memahami 7 Layer Jaringan",
+    "excerpt": "OSI Model adalah salah satu konsep paling fundamental dalam jaringan komputer. Hampir semua topik jaringan yang lebih advanced akan merujuk ke model ini.",
+    "category": "network",
+    "date": "2026-08-15",
+    "readTime": "7 min read",
+    "file": "osi-model-7-layer.md",
+    "tags": ["networking", "osi", "fundamental"]
+  },
+  {
+    "slug": "ip-address-dan-subnetting",
+    "title": "IP Address dan Subnetting: Dari Nol Sampai Paham",
+    "excerpt": "IP address adalah alamat yang digunakan setiap perangkat dalam jaringan untuk saling kenal dan berkomunikasi. Tanpa IP address, router tidak tahu harus mengirim data ke mana.",
+    "category": "network",
+    "date": "2026-08-14",
+    "readTime": "8 min read",
+    "file": "ip-address-dan-subnetting.md",
+    "tags": ["networking", "ip", "subnetting", "fundamental"]
+  },
+  {
+    "slug": "protokol-tcp-ip",
+    "title": "Protokol TCP/IP: Cara Data Berpindah di Internet",
+    "excerpt": "Setiap kali kamu browsing, streaming, atau kirim email — di balik layar ada serangkaian protokol yang bekerja untuk memastikan data sampai dengan benar.",
+    "category": "network",
+    "date": "2026-08-13",
+    "readTime": "7 min read",
+    "file": "protokol-tcp-ip.md",
+    "tags": ["networking", "tcp", "udp", "protocol"]
+  },
+  {
+    "slug": "dns-dhcp-nat",
+    "title": "DNS, DHCP, dan NAT: Tiga Layanan yang Bekerja Diam-Diam",
+    "excerpt": "Setiap kali kamu konek ke WiFi dan langsung bisa browsing internet — ada tiga layanan yang bekerja di balik layar tanpa kamu sadari: DNS, DHCP, dan NAT.",
+    "category": "network",
+    "date": "2026-08-12",
+    "readTime": "8 min read",
+    "file": "dns-dhcp-nat.md",
+    "tags": ["networking", "dns", "dhcp", "nat"]
+  },
+  {
+    "slug": "apa-itu-cybersecurity",
+    "title": "Apa Itu Cybersecurity?",
+    "excerpt": "Di era di mana hampir semua aktivitas kita bergantung pada internet, cybersecurity bukan lagi urusan orang IT saja. Ini urusan semua orang.",
+    "category": "security",
+    "date": "2026-08-11",
+    "readTime": "7 min read",
+    "file": "apa-itu-cybersecurity.md",
+    "tags": ["cybersecurity", "fundamental", "beginner"]
+  },
+  {
+    "slug": "red-team-vs-blue-team",
+    "title": "Red Team vs Blue Team: Dua Sisi Cybersecurity",
+    "excerpt": "Dalam dunia cybersecurity, ada dua kubu yang kelihatannya berlawanan tapi sebenarnya saling membutuhkan: Red Team dan Blue Team.",
+    "category": "security",
     "date": "2026-08-10",
     "readTime": "8 min read",
-    "file": "subnetting-untuk-pemula.md",
-    "tags": [
-      "networking",
-      "subnetting",
-      "ipv4",
-      "writeup"
-    ]
+    "file": "red-team-vs-blue-team.md",
+    "tags": ["cybersecurity", "red team", "blue team", "career"]
   },
   {
-    "slug": "nmap-cheatsheet",
-    "title": "Nmap Cheatsheet: Command yang Sering Aku Pakai",
-    "excerpt": "Nmap adalah teman terbaik siapapun yang ngulik jaringan atau security. Ini kumpulan command yang paling sering aku pakai sehari-hari, dari basic scan sampai yang lebih advance.",
+    "slug": "linux-untuk-security",
+    "title": "Linux untuk Security: Kenapa Wajib dan Cara Mulainya",
+    "excerpt": "Hampir semua tools cybersecurity yang serius berjalan di Linux. Kalau kamu serius mau masuk ke dunia security, menguasai Linux bukan opsional — ini wajib.",
     "category": "security",
+    "date": "2026-08-09",
+    "readTime": "9 min read",
+    "file": "linux-untuk-security.md",
+    "tags": ["linux", "security", "kali", "tools"]
+  },
+  {
+    "slug": "ethical-hacking-dan-metodologi",
+    "title": "Ethical Hacking dan Metodologinya",
+    "excerpt": "Hacking sering punya konotasi negatif di media. Padahal ada sisi lain yang sama pentingnya: ethical hacking — hacking yang dilakukan secara legal dan bertanggung jawab.",
+    "category": "security",
+    "date": "2026-08-08",
+    "readTime": "9 min read",
+    "file": "ethical-hacking-dan-metodologi.md",
+    "tags": ["ethical hacking", "pentest", "methodology", "security"]
+  },
+  {
+    "slug": "pengenalan-ctf",
+    "title": "Pengenalan CTF: Cara Paling Seru Belajar Cybersecurity",
+    "excerpt": "Kalau kamu mau belajar cybersecurity secara praktis tapi tidak tahu harus mulai dari mana, jawabannya sederhana: ikut CTF.",
+    "category": "security",
+    "date": "2026-08-07",
+    "readTime": "8 min read",
+    "file": "pengenalan-ctf.md",
+    "tags": ["ctf", "security", "beginner", "tryhackme", "hackthebox"]
+  },
+  {
+    "slug": "python-untuk-pemula",
+    "title": "Python untuk Pemula: Kenapa Python dan Cara Mulainya",
+    "excerpt": "Kalau kamu mau belajar programming dan bingung harus mulai dari mana, Python adalah jawaban yang hampir selalu benar. Simpel, powerful, dan dipakai di mana-mana.",
+    "category": "coding",
+    "date": "2026-08-06",
+    "readTime": "8 min read",
+    "file": "python-untuk-pemula.md",
+    "tags": ["python", "programming", "beginner", "fundamental"]
+  },
+  {
+    "slug": "python-struktur-data",
+    "title": "Python: Struktur Data yang Wajib Dikuasai",
+    "excerpt": "Python punya empat struktur data built-in yang paling sering dipakai: List, Dictionary, Tuple, dan Set. Kuasai keempatnya dan kamu sudah punya fondasi yang kuat.",
+    "category": "coding",
     "date": "2026-08-05",
-    "readTime": "6 min read",
-    "file": "nmap-cheatsheet.md",
-    "tags": [
-      "nmap",
-      "security",
-      "networking",
-      "tools"
-    ]
+    "readTime": "9 min read",
+    "file": "python-struktur-data.md",
+    "tags": ["python", "data structures", "list", "dictionary"]
   },
   {
-    "slug": "kenapa-aku-suka-linux",
-    "title": "Kenapa Aku Suka Linux (dan Susah Move On ke Windows)",
-    "excerpt": "Ada yang nanya kenapa aku lebih sering pakai Linux. Jawabannya panjang. Tapi singkatnya: karena Linux itu jujur. Dia tidak pura-pura simple padahal di dalamnya ribet.",
+    "slug": "python-fungsi-module-file",
+    "title": "Python: Fungsi, Module, dan File Handling",
+    "excerpt": "Setelah paham variabel dan struktur data, saatnya belajar cara membuat kode yang lebih terorganisir dengan fungsi, module, dan cara baca-tulis file.",
     "category": "coding",
-    "date": "2026-07-28",
-    "readTime": "5 min read",
-    "file": "kenapa-aku-suka-linux.md",
-    "tags": [
-      "linux",
-      "opinion",
-      "coding"
-    ]
+    "date": "2026-08-04",
+    "readTime": "10 min read",
+    "file": "python-fungsi-module-file.md",
+    "tags": ["python", "functions", "modules", "file handling"]
   },
   {
-    "slug": "kucing-mengajarkan-sabar",
-    "title": "20 Kucing Mengajarkanku Arti Sabar",
-    "excerpt": "Dulu aku pikir sabar itu bisa dipelajari dari buku. Ternyata guru terbaik sabar ada di rumah, berbulu, dan terkadang suka muntah di atas keyboard.",
-    "category": "life",
-    "date": "2026-07-20",
-    "readTime": "4 min read",
-    "file": "kucing-mengajarkan-sabar.md",
-    "tags": [
-      "cats",
-      "life",
-      "random"
-    ]
-  },
-  {
-    "slug": "tentang-cinta-yang-diam",
-    "title": "Tentang Cinta yang Diam",
-    "excerpt": "Ada cinta yang tidak perlu diucapkan. Tidak perlu diumumkan. Cukup ada, diam, dan terus dijaga dalam sunyi. Ini tentang cinta yang aku simpan sendiri.",
-    "category": "love",
-    "date": "2026-07-15",
-    "readTime": "3 min read",
-    "file": "tentang-cinta-yang-diam.md",
-    "tags": [
-      "love",
-      "life",
-      "curhat"
-    ]
-  },
-  {
-    "slug": "bash-scripting-dasar",
-    "title": "Bash Scripting Dasar: Automasi Hal-Hal Kecil yang Bikin Hidup Lebih Mudah",
-    "excerpt": "Banyak hal yang bisa diotomasi dengan bash script sederhana. Mulai dari backup file, rename batch, sampai notifikasi. Berikut fondasi yang perlu kamu tahu.",
+    "slug": "python-oop",
+    "title": "Python OOP: Berpikir dalam Objek",
+    "excerpt": "Object-Oriented Programming mengorganisir kode ke dalam objek — entitas yang punya data dan perilaku. OOP membuat kode lebih terstruktur, reusable, dan mudah dipelihara.",
     "category": "coding",
-    "date": "2026-07-08",
-    "readTime": "7 min read",
-    "file": "bash-scripting-dasar.md",
-    "tags": [
-      "bash",
-      "scripting",
-      "linux",
-      "automation"
-    ]
+    "date": "2026-08-03",
+    "readTime": "10 min read",
+    "file": "python-oop.md",
+    "tags": ["python", "oop", "class", "inheritance"]
+  },
+  {
+    "slug": "python-untuk-cybersecurity",
+    "title": "Python untuk Cybersecurity: Dari Scripting sampai Automasi",
+    "excerpt": "Python adalah bahasa pilihan utama di dunia cybersecurity. Hampir semua tools security modern ditulis dalam Python — dari network scanners sampai exploit scripts.",
+    "category": "coding",
+    "date": "2026-08-02",
+    "readTime": "11 min read",
+    "file": "python-untuk-cybersecurity.md",
+    "tags": ["python", "cybersecurity", "scripting", "automation"]
   }
 ]
