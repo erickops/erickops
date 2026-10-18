@@ -1,5 +1,95 @@
 [
   {
+    "slug": "python-concurrency",
+    "title": "Python: Concurrency dengan Threading dan asyncio",
+    "excerpt": "Fetch 100 URL satu per satu dan nunggu lama? Concurrency adalah solusinya — jalankan multiple task sekaligus dengan threading dan asyncio untuk program yang jauh lebih cepat.",
+    "category": "coding",
+    "date": "2026-09-28",
+    "readTime": "10 min read",
+    "file": "python-concurrency.md",
+    "tags": ["python", "concurrency", "threading", "asyncio", "async"]
+  },
+  {
+    "slug": "python-virtual-environment",
+    "title": "Python: Virtual Environment dan Dependency Management",
+    "excerpt": "Dua project Python dengan versi library berbeda? Virtual environment adalah solusinya — ruang terisolasi untuk tiap project agar tidak saling konflik.",
+    "category": "coding",
+    "date": "2026-09-15",
+    "readTime": "8 min read",
+    "file": "python-virtual-environment.md",
+    "tags": ["python", "venv", "pip", "poetry", "dependency"]
+  },
+  {
+    "slug": "python-regex",
+    "title": "Python: Regular Expressions (Regex)",
+    "excerpt": "Perlu mencari semua email, IP address, atau nomor telepon dalam ribuan baris teks? Satu pola regex bisa menggantikan puluhan baris kode manual.",
+    "category": "coding",
+    "date": "2026-09-03",
+    "readTime": "9 min read",
+    "file": "python-regex.md",
+    "tags": ["python", "regex", "regular expressions", "pattern matching"]
+  },
+  {
+    "slug": "social-engineering",
+    "title": "Social Engineering: Seni Memanipulasi Manusia",
+    "excerpt": "Semua firewall dan enkripsi bisa jadi tidak berguna kalau attacker bisa memanipulasi manusia yang mengoperasikannya. Social engineering adalah ancaman yang sering diremehkan.",
+    "category": "security",
+    "date": "2026-09-25",
+    "readTime": "9 min read",
+    "file": "social-engineering.md",
+    "tags": ["security", "social engineering", "phishing", "awareness"]
+  },
+  {
+    "slug": "network-attacks-and-defense",
+    "title": "Network Attacks & Defense",
+    "excerpt": "ARP spoofing, DNS poisoning, DDoS, Man-in-the-Middle — ini teknik serangan jaringan paling umum dan cara mendeteksi serta mencegahnya.",
+    "category": "security",
+    "date": "2026-09-14",
+    "readTime": "10 min read",
+    "file": "network-attacks-and-defense.md",
+    "tags": ["security", "network attacks", "arp spoofing", "ddos", "mitm"]
+  },
+  {
+    "slug": "password-attacks",
+    "title": "Password Attacks: Teknik dan Cara Bertahan",
+    "excerpt": "Brute force, dictionary attack, credential stuffing, rainbow table — cara attacker membobol password dan bagaimana kamu bisa bertahan dari semuanya.",
+    "category": "security",
+    "date": "2026-09-02",
+    "readTime": "9 min read",
+    "file": "password-attacks.md",
+    "tags": ["security", "password", "brute force", "hashcat", "credential stuffing"]
+  },
+  {
+    "slug": "ipv6-generasi-baru-ip",
+    "title": "IPv6: Generasi Baru IP Address",
+    "excerpt": "IPv4 sudah habis sejak 2011. IPv6 adalah solusi permanennya — dengan 340 undecillion address, cukup untuk miliaran perangkat di setiap sudut bumi.",
+    "category": "network",
+    "date": "2026-09-27",
+    "readTime": "8 min read",
+    "file": "ipv6-generasi-baru-ip.md",
+    "tags": ["networking", "ipv6", "ip address", "internet"]
+  },
+  {
+    "slug": "network-security-fundamentals",
+    "title": "Network Security Fundamentals",
+    "excerpt": "Firewall, IDS/IPS, VPN, network segmentation — konsep dasar keamanan jaringan yang wajib diketahui siapapun yang bekerja dengan infrastruktur.",
+    "category": "network",
+    "date": "2026-09-13",
+    "readTime": "9 min read",
+    "file": "network-security-fundamentals.md",
+    "tags": ["networking", "security", "firewall", "vpn", "ids"]
+  },
+  {
+    "slug": "wireless-networking",
+    "title": "Wireless Networking: Cara Kerja WiFi",
+    "excerpt": "Dari kamu klik Connect sampai data sampai ke internet, ada proses yang kompleks terjadi di balik layar. Inilah cara WiFi benar-benar bekerja.",
+    "category": "network",
+    "date": "2026-09-01",
+    "readTime": "8 min read",
+    "file": "wireless-networking.md",
+    "tags": ["networking", "wifi", "wireless", "802.11", "wpa"]
+  },
+  {
     "slug": "python-automasi",
     "title": "Python: Automasi dengan os, subprocess, dan schedule",
     "excerpt": "Python bisa mengotomasi task yang biasanya kamu lakukan manual — rename file, backup folder, jalankan command, sampai jadwalkan task berulang. Semua dengan modul bawaan Python.",
