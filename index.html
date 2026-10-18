@@ -172,8 +172,7 @@
         const posts = await fetchPosts();
         const recent = posts.slice(0, 3);
         document.getElementById('stat-articles').textContent = posts.length;
-        const cats = [...new Set(posts.map(p => p.category))];
-        document.getElementById('stat-categories').textContent = cats.length;
+        document.getElementById('stat-categories').textContent = 6;
         container.innerHTML = '';
         recent.forEach((post, i) => {
           const card = buildPostCard(post, i);

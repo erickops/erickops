@@ -1,10 +1,100 @@
 [
   {
+    "slug": "python-automasi",
+    "title": "Python: Automasi dengan os, subprocess, dan schedule",
+    "excerpt": "Python bisa mengotomasi task yang biasanya kamu lakukan manual — rename file, backup folder, jalankan command, sampai jadwalkan task berulang. Semua dengan modul bawaan Python.",
+    "category": "coding",
+    "date": "2026-08-24",
+    "readTime": "10 min read",
+    "file": "python-automasi.md",
+    "tags": ["python", "automation", "os", "subprocess", "schedule"]
+  },
+  {
+    "slug": "python-working-with-apis",
+    "title": "Python: Working with APIs",
+    "excerpt": "Hampir semua aplikasi modern berkomunikasi dengan API. Python, dengan library requests-nya, membuat kerja dengan API menjadi sangat simpel.",
+    "category": "coding",
+    "date": "2026-08-23",
+    "readTime": "9 min read",
+    "file": "python-working-with-apis.md",
+    "tags": ["python", "api", "requests", "json", "http"]
+  },
+  {
+    "slug": "python-exception-handling",
+    "title": "Python: Exception Handling dan Debugging",
+    "excerpt": "Program yang bagus bukan yang tidak pernah error — tapi yang tahu cara menghadapi error dengan elegan. Pelajari exception handling dan debugging di Python.",
+    "category": "coding",
+    "date": "2026-08-22",
+    "readTime": "9 min read",
+    "file": "python-exception-handling.md",
+    "tags": ["python", "exception", "debugging", "error handling"]
+  },
+  {
+    "slug": "web-application-security-basics",
+    "title": "Web Application Security Basics",
+    "excerpt": "Hampir semua web application punya kerentanan. OWASP mencatat injeksi, broken authentication, dan misconfiguration sebagai tiga besar penyebab breach di web application.",
+    "category": "security",
+    "date": "2026-08-21",
+    "readTime": "10 min read",
+    "file": "web-application-security-basics.md",
+    "tags": ["security", "web", "owasp", "sql injection", "xss"]
+  },
+  {
+    "slug": "vulnerability-scanning",
+    "title": "Vulnerability Scanning: Menemukan Celah Sebelum Attacker",
+    "excerpt": "Setelah reconnaissance, langkah berikutnya adalah vulnerability scanning — mencari celah keamanan yang bisa dieksploitasi menggunakan tools seperti Nmap NSE, Nikto, dan OpenVAS.",
+    "category": "security",
+    "date": "2026-08-20",
+    "readTime": "8 min read",
+    "file": "vulnerability-scanning.md",
+    "tags": ["security", "vulnerability", "nmap", "nikto", "cve"]
+  },
+  {
+    "slug": "footprinting-dan-reconnaissance",
+    "title": "Footprinting dan Reconnaissance: Seni Mengumpulkan Informasi",
+    "excerpt": "Sebelum menyerang, attacker observasi dulu. Fase ini disebut reconnaissance — mengumpulkan sebanyak mungkin informasi tentang target tanpa membuat kegaduhan.",
+    "category": "security",
+    "date": "2026-08-19",
+    "readTime": "9 min read",
+    "file": "footprinting-dan-reconnaissance.md",
+    "tags": ["security", "osint", "reconnaissance", "footprinting"]
+  },
+  {
+    "slug": "troubleshooting-jaringan",
+    "title": "Troubleshooting Jaringan: Pendekatan Sistematis",
+    "excerpt": "Jaringan bermasalah adalah salah satu hal paling frustrasi di dunia IT. Tapi dengan pendekatan yang sistematis, hampir semua masalah jaringan bisa didiagnosa dan diperbaiki.",
+    "category": "network",
+    "date": "2026-08-18",
+    "readTime": "8 min read",
+    "file": "troubleshooting-jaringan.md",
+    "tags": ["networking", "troubleshooting", "ping", "traceroute", "wireshark"]
+  },
+  {
+    "slug": "vlan-virtual-lan",
+    "title": "VLAN: Memisahkan Jaringan Secara Logis",
+    "excerpt": "VLAN memungkinkan kamu membagi satu jaringan fisik menjadi beberapa jaringan logis yang terisolasi — tanpa perlu menambah switch fisik baru.",
+    "category": "network",
+    "date": "2026-08-17",
+    "readTime": "8 min read",
+    "file": "vlan-virtual-lan.md",
+    "tags": ["networking", "vlan", "switching", "802.1q"]
+  },
+  {
+    "slug": "routing-dan-switching",
+    "title": "Routing dan Switching: Cara Data Menemukan Jalannya",
+    "excerpt": "Bagaimana data tahu harus lewat mana untuk sampai ke tujuan? Di sinilah routing dan switching berperan — dua fungsi inti yang menggerakkan semua jaringan.",
+    "category": "network",
+    "date": "2026-08-16",
+    "readTime": "8 min read",
+    "file": "routing-dan-switching.md",
+    "tags": ["networking", "routing", "switching", "router", "switch"]
+  },
+  {
     "slug": "apa-itu-jaringan-komputer",
     "title": "Apa Itu Jaringan Komputer?",
     "excerpt": "Kalau kamu pernah kirim pesan lewat WhatsApp, nonton YouTube, atau browsing internet — semuanya bisa terjadi karena ada yang namanya jaringan komputer. Tapi apa sebenarnya jaringan komputer itu?",
     "category": "network",
-    "date": "2026-08-16",
+    "date": "2026-08-15",
     "readTime": "6 min read",
     "file": "apa-itu-jaringan-komputer.md",
     "tags": ["networking", "fundamental", "beginner"]
@@ -14,7 +104,7 @@
     "title": "OSI Model: Memahami 7 Layer Jaringan",
     "excerpt": "OSI Model adalah salah satu konsep paling fundamental dalam jaringan komputer. Hampir semua topik jaringan yang lebih advanced akan merujuk ke model ini.",
     "category": "network",
-    "date": "2026-08-15",
+    "date": "2026-08-14",
     "readTime": "7 min read",
     "file": "osi-model-7-layer.md",
     "tags": ["networking", "osi", "fundamental"]
@@ -24,7 +114,7 @@
     "title": "IP Address dan Subnetting: Dari Nol Sampai Paham",
     "excerpt": "IP address adalah alamat yang digunakan setiap perangkat dalam jaringan untuk saling kenal dan berkomunikasi. Tanpa IP address, router tidak tahu harus mengirim data ke mana.",
     "category": "network",
-    "date": "2026-08-14",
+    "date": "2026-08-13",
     "readTime": "8 min read",
     "file": "ip-address-dan-subnetting.md",
     "tags": ["networking", "ip", "subnetting", "fundamental"]
@@ -34,7 +124,7 @@
     "title": "Protokol TCP/IP: Cara Data Berpindah di Internet",
     "excerpt": "Setiap kali kamu browsing, streaming, atau kirim email — di balik layar ada serangkaian protokol yang bekerja untuk memastikan data sampai dengan benar.",
     "category": "network",
-    "date": "2026-08-13",
+    "date": "2026-08-12",
     "readTime": "7 min read",
     "file": "protokol-tcp-ip.md",
     "tags": ["networking", "tcp", "udp", "protocol"]
@@ -44,7 +134,7 @@
     "title": "DNS, DHCP, dan NAT: Tiga Layanan yang Bekerja Diam-Diam",
     "excerpt": "Setiap kali kamu konek ke WiFi dan langsung bisa browsing internet — ada tiga layanan yang bekerja di balik layar tanpa kamu sadari: DNS, DHCP, dan NAT.",
     "category": "network",
-    "date": "2026-08-12",
+    "date": "2026-08-11",
     "readTime": "8 min read",
     "file": "dns-dhcp-nat.md",
     "tags": ["networking", "dns", "dhcp", "nat"]
@@ -54,7 +144,7 @@
     "title": "Apa Itu Cybersecurity?",
     "excerpt": "Di era di mana hampir semua aktivitas kita bergantung pada internet, cybersecurity bukan lagi urusan orang IT saja. Ini urusan semua orang.",
     "category": "security",
-    "date": "2026-08-11",
+    "date": "2026-08-10",
     "readTime": "7 min read",
     "file": "apa-itu-cybersecurity.md",
     "tags": ["cybersecurity", "fundamental", "beginner"]
@@ -64,7 +154,7 @@
     "title": "Red Team vs Blue Team: Dua Sisi Cybersecurity",
     "excerpt": "Dalam dunia cybersecurity, ada dua kubu yang kelihatannya berlawanan tapi sebenarnya saling membutuhkan: Red Team dan Blue Team.",
     "category": "security",
-    "date": "2026-08-10",
+    "date": "2026-08-09",
     "readTime": "8 min read",
     "file": "red-team-vs-blue-team.md",
     "tags": ["cybersecurity", "red team", "blue team", "career"]
@@ -74,7 +164,7 @@
     "title": "Linux untuk Security: Kenapa Wajib dan Cara Mulainya",
     "excerpt": "Hampir semua tools cybersecurity yang serius berjalan di Linux. Kalau kamu serius mau masuk ke dunia security, menguasai Linux bukan opsional — ini wajib.",
     "category": "security",
-    "date": "2026-08-09",
+    "date": "2026-08-08",
     "readTime": "9 min read",
     "file": "linux-untuk-security.md",
     "tags": ["linux", "security", "kali", "tools"]
@@ -84,7 +174,7 @@
     "title": "Ethical Hacking dan Metodologinya",
     "excerpt": "Hacking sering punya konotasi negatif di media. Padahal ada sisi lain yang sama pentingnya: ethical hacking — hacking yang dilakukan secara legal dan bertanggung jawab.",
     "category": "security",
-    "date": "2026-08-08",
+    "date": "2026-08-07",
     "readTime": "9 min read",
     "file": "ethical-hacking-dan-metodologi.md",
     "tags": ["ethical hacking", "pentest", "methodology", "security"]
@@ -94,7 +184,7 @@
     "title": "Pengenalan CTF: Cara Paling Seru Belajar Cybersecurity",
     "excerpt": "Kalau kamu mau belajar cybersecurity secara praktis tapi tidak tahu harus mulai dari mana, jawabannya sederhana: ikut CTF.",
     "category": "security",
-    "date": "2026-08-07",
+    "date": "2026-08-06",
     "readTime": "8 min read",
     "file": "pengenalan-ctf.md",
     "tags": ["ctf", "security", "beginner", "tryhackme", "hackthebox"]
@@ -104,7 +194,7 @@
     "title": "Python untuk Pemula: Kenapa Python dan Cara Mulainya",
     "excerpt": "Kalau kamu mau belajar programming dan bingung harus mulai dari mana, Python adalah jawaban yang hampir selalu benar. Simpel, powerful, dan dipakai di mana-mana.",
     "category": "coding",
-    "date": "2026-08-06",
+    "date": "2026-08-05",
     "readTime": "8 min read",
     "file": "python-untuk-pemula.md",
     "tags": ["python", "programming", "beginner", "fundamental"]
@@ -114,7 +204,7 @@
     "title": "Python: Struktur Data yang Wajib Dikuasai",
     "excerpt": "Python punya empat struktur data built-in yang paling sering dipakai: List, Dictionary, Tuple, dan Set. Kuasai keempatnya dan kamu sudah punya fondasi yang kuat.",
     "category": "coding",
-    "date": "2026-08-05",
+    "date": "2026-08-04",
     "readTime": "9 min read",
     "file": "python-struktur-data.md",
     "tags": ["python", "data structures", "list", "dictionary"]
@@ -124,7 +214,7 @@
     "title": "Python: Fungsi, Module, dan File Handling",
     "excerpt": "Setelah paham variabel dan struktur data, saatnya belajar cara membuat kode yang lebih terorganisir dengan fungsi, module, dan cara baca-tulis file.",
     "category": "coding",
-    "date": "2026-08-04",
+    "date": "2026-08-03",
     "readTime": "10 min read",
     "file": "python-fungsi-module-file.md",
     "tags": ["python", "functions", "modules", "file handling"]
@@ -134,7 +224,7 @@
     "title": "Python OOP: Berpikir dalam Objek",
     "excerpt": "Object-Oriented Programming mengorganisir kode ke dalam objek — entitas yang punya data dan perilaku. OOP membuat kode lebih terstruktur, reusable, dan mudah dipelihara.",
     "category": "coding",
-    "date": "2026-08-03",
+    "date": "2026-08-02",
     "readTime": "10 min read",
     "file": "python-oop.md",
     "tags": ["python", "oop", "class", "inheritance"]
@@ -144,7 +234,7 @@
     "title": "Python untuk Cybersecurity: Dari Scripting sampai Automasi",
     "excerpt": "Python adalah bahasa pilihan utama di dunia cybersecurity. Hampir semua tools security modern ditulis dalam Python — dari network scanners sampai exploit scripts.",
     "category": "coding",
-    "date": "2026-08-02",
+    "date": "2026-08-01",
     "readTime": "11 min read",
     "file": "python-untuk-cybersecurity.md",
     "tags": ["python", "cybersecurity", "scripting", "automation"]
